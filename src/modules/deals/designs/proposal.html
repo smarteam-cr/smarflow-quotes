@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Propuesta de negocio</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        color: #1f2933;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        line-height: 1.45;
+        margin: 0;
+      }
+
+      header {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+
+      .header-line {
+        font-size: 13px;
+        margin: 2px 0;
+      }
+
+      section {
+        margin-bottom: 28px;
+      }
+
+      h2 {
+        border-bottom: 1px solid #b8c2cc;
+        font-size: 15px;
+        margin: 0 0 12px;
+        padding-bottom: 6px;
+      }
+
+      .field {
+        margin: 4px 0;
+      }
+
+      .label {
+        font-weight: 700;
+      }
+
+      table {
+        border-collapse: collapse;
+        table-layout: fixed;
+        width: 100%;
+      }
+
+      th,
+      td {
+        border: 1px solid #c9d1d9;
+        padding: 8px;
+        vertical-align: top;
+        word-wrap: break-word;
+      }
+
+      th {
+        background: #eef2f6;
+        font-size: 11px;
+        text-align: left;
+      }
+
+      .number,
+      .money {
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .empty {
+        color: #6b7280;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Propuesta de negocio</h1>
+      <p class="header-line">Construtecho Centroamérica</p>
+      <p class="header-line">Sucursal Guatemala</p>
+      <p class="header-line">www.construtecho.com.gt</p>
+    </header>
+
+    <section>
+      <h2>Información de la empresa</h2>
+      <p class="field">
+        <span class="label">Nombre:</span> {{companyName}}
+      </p>
+      {{contactInfo}}
+    </section>
+
+    <section>
+      <h2>Detalle de artículos</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 12%;">CANTIDAD</th>
+            <th style="width: 25%;">NOMBRE DEL ARTÍCULO</th>
+            <th style="width: 29%;">DESCRIPCIÓN DEL SERVICIO</th>
+            <th style="width: 17%;">PRECIO UNITARIO</th>
+            <th style="width: 17%;">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{lineItemRows}}
+        </tbody>
+      </table>
+    </section>
+  </body>
+</html>

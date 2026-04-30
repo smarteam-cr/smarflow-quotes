@@ -12,7 +12,13 @@
         "crm.objects.contacts.read",
         "crm.objects.contacts.write",
         "crm.objects.deals.read",
-        "crm.objects.deals.write"
+        "crm.objects.deals.write",
+        "crm.objects.companies.write",
+        "crm.objects.companies.read",
+        "crm.objects.line_items.write",
+        "crm.schemas.line_items.read",
+        "crm.objects.line_items.read",
+        "e-commerce"
       ],
       "optionalScopes": [],
       "conditionallyRequiredScopes": []
