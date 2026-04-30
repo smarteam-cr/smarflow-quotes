@@ -1,21 +1,15 @@
 import { Client } from '@hubspot/api-client';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer';
 import { badRequest, serverError } from '../../utils/errors.js';
 import { buildProposalHtml } from './proposal-template.js';
 
-const PROJECT_ROOT = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  '../../..',
-);
 const DEAL_PROPERTIES = ['dealname', 'amount', 'pipeline', 'dealstage'];
 const DEAL_ASSOCIATIONS = ['companies', 'contacts', 'line_items'];
 const COMPANY_PROPERTIES = ['name', 'domain'];
 const CONTACT_PROPERTIES = ['email', 'firstname', 'lastname'];
 const LINE_ITEM_PROPERTIES = ['name', 'price', 'quantity', 'description'];
 
-export function createDealService({ hubspotAccessToken, logger }) {
+export function createDealService({ hubspotAccessToken, logger, storage }) {
   const hubspotClient = hubspotAccessToken
     ? new Client({
         accessToken: hubspotAccessToken,
@@ -84,10 +78,10 @@ export function createDealService({ hubspotAccessToken, logger }) {
       contacts,
       lineItems,
     };
-    const pdfPath = await createProposalPdf(payload);
+    const pdf = await createProposalPdf(payload, storage);
     payload.pdf = {
-      path: pdfPath,
-      filename: path.basename(pdfPath),
+      key: pdf.key,
+      url: pdf.url,
     };
 
     logger.info({ dealId }, 'Deal quote data fetched');
@@ -121,11 +115,11 @@ async function batchReadObjects(batchApi, ids, properties) {
   return response.results ?? [];
 }
 
-async function createProposalPdf(quoteData) {
-  const pdfPath = path.resolve(
-    PROJECT_ROOT,
-    `propuesta-${quoteData.dealId}.pdf`,
-  );
+async function createProposalPdf(quoteData, storage) {
+  if (!storage) {
+    throw serverError('R2 storage plugin is required to upload proposal PDFs.');
+  }
+
   const browser = await puppeteer.launch({
     args: [
       '--no-sandbox',
@@ -138,11 +132,13 @@ async function createProposalPdf(quoteData) {
   try {
     const page = await browser.newPage();
 
-    await page.setContent(await buildProposalHtml(quoteData), {
-      waitUntil: 'networkidle0',
+    const proposalHtml = await buildProposalHtml(quoteData);
+
+    await page.setContent(proposalHtml, {
+      timeout: 10000,
+      waitUntil: 'domcontentloaded',
     });
-    await page.pdf({
-      path: pdfPath,
+    const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true,
       margin: {
@@ -152,8 +148,12 @@ async function createProposalPdf(quoteData) {
         left: '14mm',
       },
     });
+    const key = `quotes/propuesta-${quoteData.dealId}-${Date.now()}.pdf`;
 
-    return pdfPath;
+    return storage.uploadPdf({
+      key,
+      body: pdfBuffer,
+    });
   } finally {
     await browser.close();
   }

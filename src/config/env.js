@@ -20,5 +20,20 @@ export const env = {
     process.env.HUBSPOT_ACCESS_TOKEN || process.env.HUBSPOT_PRIVATE_APP_TOKEN,
   mongoUrl: process.env.MONGO_URL,
   mongoDbName: process.env.MONGO_DB_NAME ?? 'smartcoti',
+  r2: {
+    publicUrl:
+      process.env.URL_PUBLIC_dEV ||
+      process.env.URL_PUBLIC_DEV ||
+      process.env.R2_PUBLIC_URL,
+    accountId: process.env.ACCOUNT_ID || process.env.R2_ACCOUNT_ID,
+    endpoint: process.env.S3_API || process.env.R2_S3_API,
+    bucketName: process.env.BUCKET_NAME || process.env.R2_BUCKET_NAME,
+    accessKeyId:
+      process.env.R2_ACCESS_KEY_ID ||
+      process.env.CLOUDFLARE_R2_ACCESS_KEY_ID,
+    secretAccessKey:
+      process.env.R2_SECRET_ACCESS_KEY ||
+      process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY,
+  },
   version: packageJson.version,
 };

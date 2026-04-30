@@ -5,6 +5,7 @@ import { AppError } from './utils/errors.js';
 import dealRoutes from './modules/deals/deal.routes.js';
 import loggerPlugin from './plugins/logger.plugin.js';
 import mongoPlugin from './plugins/mongo.plugin.js';
+import r2Plugin from './plugins/r2.plugin.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -25,6 +26,7 @@ export async function buildApp() {
   await app.register(cors, { origin: true });
   await app.register(loggerPlugin);
   await app.register(mongoPlugin);
+  await app.register(r2Plugin);
 
   app.setErrorHandler((error, _request, reply) => {
     if (error instanceof AppError) {
