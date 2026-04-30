@@ -9,3 +9,7 @@ export class AppError extends Error {
 export function badRequest(message) {
   return new AppError(message, 400);
 }
+
+export function serverError(message) {
+  return new AppError(message, 500);
+}
