@@ -1,9 +1,9 @@
 import { createDealController } from './deal.controller.js';
-import { DealService } from './deal.service.js';
+import { createDealService } from './deal.service.js';
 import { env } from '../../config/env.js';
 
 export default async function dealRoutes(fastify) {
-  const dealService = new DealService({
+  const dealService = createDealService({
     hubspotAccessToken: env.hubspotAccessToken,
     logger: fastify.log,
   });
