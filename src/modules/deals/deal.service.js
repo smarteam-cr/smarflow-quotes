@@ -132,11 +132,11 @@ async function createProposalPdf(quoteData, storage) {
   try {
     const page = await browser.newPage();
 
-    const proposalHtml = await buildProposalHtml(quoteData);
+    const proposalHtml = await buildProposalHtml();
 
     await page.setContent(proposalHtml, {
-      timeout: 10000,
-      waitUntil: 'domcontentloaded',
+      timeout: 15000,
+      waitUntil: 'networkidle0',
     });
     const pdfBuffer = await page.pdf({
       format: 'A4',

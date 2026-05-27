@@ -4,117 +4,386 @@
     <meta charset="utf-8" />
     <title>Propuesta de negocio</title>
     <style>
+      /* ===== RESET & BASE ===== */
       * {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
 
       body {
-        color: #1f2933;
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 12px;
-        line-height: 1.45;
-        margin: 0;
+        font-size: 13px;
+        line-height: 1.4;
+        color: #1f2933;
       }
 
-      header {
-        margin-bottom: 32px;
+      .cpq-quote-body {
+        padding: 0;
+      }
+
+      /* ===== HEADER ===== */
+      .construtecho-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 8px 0;
+        border-bottom: 2px solid #0d2a5c;
+      }
+
+      .construtecho-header__logo {
+        flex: 0 0 auto;
+      }
+
+      .construtecho-header__logo img {
+        max-height: 55px;
+        width: auto;
+        display: block;
+      }
+
+      .construtecho-header__title {
+        flex: 1 1 auto;
         text-align: center;
       }
 
-      h1 {
-        font-size: 22px;
-        font-weight: 700;
-        margin: 0 0 8px;
+      .construtecho-header__title ul {
+        list-style: none;
       }
 
-      .header-line {
+      .construtecho-header__title li {
+        line-height: 1.4;
+        color: #0d2a5c;
+      }
+
+      .construtecho-header__title li:nth-child(1) {
         font-size: 13px;
-        margin: 2px 0;
-      }
-
-      section {
-        margin-bottom: 28px;
-      }
-
-      h2 {
-        border-bottom: 1px solid #b8c2cc;
-        font-size: 15px;
-        margin: 0 0 12px;
-        padding-bottom: 6px;
-      }
-
-      .field {
-        margin: 4px 0;
-      }
-
-      .label {
         font-weight: 700;
+        text-transform: uppercase;
       }
 
-      table {
-        border-collapse: collapse;
-        table-layout: fixed;
-        width: 100%;
+      .construtecho-header__title li:nth-child(2),
+      .construtecho-header__title li:nth-child(3) {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
       }
 
-      th,
-      td {
-        border: 1px solid #c9d1d9;
-        padding: 8px;
-        vertical-align: top;
-        word-wrap: break-word;
-      }
-
-      th {
-        background: #eef2f6;
+      .construtecho-header__title li:nth-child(4) {
         font-size: 11px;
-        text-align: left;
+        margin-top: 4px;
       }
 
-      .number,
-      .money {
+      .construtecho-header__title a {
+        color: #1e73be;
+        text-decoration: none;
+      }
+
+      .construtecho-header__certifications {
+        flex: 0 0 auto;
+      }
+
+      .construtecho-header__certifications img {
+        max-height: 60px;
+        width: auto;
+        display: block;
+      }
+
+      /* ===== INFO (3 columnas) ===== */
+      .construtecho-info {
+        display: flex;
+        gap: 12px;
+        padding: 10px 12px;
+        border: 1px solid #000;
+        font-size: 10px;
+        line-height: 1.3;
+        margin-top: 10px;
+      }
+
+      .construtecho-info__project-data,
+      .construtecho-info__quote-data,
+      .construtecho-info__other-data {
+        flex: 1;
+      }
+
+      .construtecho-info table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .construtecho-info td {
+        vertical-align: top;
+        padding: 2px 4px;
+      }
+
+      .construtecho-info td:first-child {
+        width: 38%;
+        font-weight: 600;
+      }
+
+      .construtecho-info td:last-child {
+        width: 62%;
+        word-break: break-word;
+      }
+
+      .construtecho-info tr:not(:last-child) td {
+        padding-bottom: 3px;
+      }
+
+      /* ===== PRODUCTS TABLE ===== */
+      .construtecho-products {
+        margin-top: 10px;
+      }
+
+      .quote-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+      }
+
+      .quote-table th,
+      .quote-table td {
+        border: 1px solid #1f2a44;
+        padding: 5px 6px;
+        vertical-align: top;
+      }
+
+      .quote-table thead th {
+        background-color: #0d2a5c;
+        color: #ffffff;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      /* Anchos de columna */
+      .quote-table .col-qty { width: 10%; }
+      .quote-table .col-name { width: 30%; }
+      .quote-table .col-desc { width: 26%; }
+      .quote-table .col-price { width: 17%; }
+      .quote-table .col-total { width: 17%; }
+
+      /* Fila de sección/categoría */
+      .section-row td {
+        background-color: #0d2a5c;
+        color: #ffffff;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .text-right {
         text-align: right;
         white-space: nowrap;
       }
 
-      .empty {
-        color: #6b7280;
-        font-style: italic;
+      /* Filas de totales */
+      .totals-row td {
+        border-left: none;
+        border-right: none;
+      }
+
+      .totals-row td:nth-child(2) {
+        font-weight: 600;
+      }
+
+      .grand-total td {
+        background-color: #0d2a5c;
+        color: #ffffff;
+        font-weight: 700;
+      }
+
+      .grand-total td:first-child {
+        background-color: #fff;
+        border-left: none;
+        border-bottom: none;
+      }
+
+      .grand-total td:nth-child(3) {
+        font-size: 16px;
+      }
+
+      /* ===== PRINT / PAGINACIÓN ===== */
+      @media print {
+        .construtecho-header {
+          padding: 12px 0;
+          border-bottom-width: 1px;
+        }
+
+        .construtecho-header__logo img {
+          max-height: 60px;
+        }
+
+        .construtecho-header__certifications img {
+          max-height: 50px;
+        }
+      }
+
+      /* El header de columnas se repite en cada página */
+      .quote-table thead {
+        display: table-header-group;
+      }
+
+      /* No cortar filas de items a la mitad */
+      .quote-table tr {
+        break-inside: avoid;
+      }
+
+      /* No cortar un grupo de categoría entre el título y su primer item */
+      .quote-table tbody {
+        break-inside: avoid;
+      }
+
+      /* Los totales siempre juntos */
+      .totals-block {
+        break-inside: avoid;
       }
     </style>
   </head>
+
   <body>
-    <header>
-      <h1>Propuesta de negocio</h1>
-      <p class="header-line">Construtecho Centroamérica</p>
-      <p class="header-line">Sucursal Guatemala</p>
-      <p class="header-line">www.construtecho.com.gt</p>
-    </header>
+    <div class="cpq-quote-body">
 
-    <section>
-      <h2>Información de la empresa</h2>
-      <p class="field">
-        <span class="label">Nombre:</span> {{companyName}}
-      </p>
-      {{contactInfo}}
-    </section>
+      <!-- ===== HEADER ===== -->
+      <div class="construtecho-header">
+        <div class="construtecho-header__logo">
+          <img src="https://50749235.fs1.hubspotusercontent-na1.net/hubfs/50749235/logo-home.png" />
+        </div>
+        <div class="construtecho-header__title">
+          <ul>
+            <li>Propuesta de negocio</li>
+            <li>Construtecho Centroamérica</li>
+            <li>Sucursal Guatemala</li>
+            <li><a href="https://construtecho.com.gt">www.construtecho.com.gt</a></li>
+          </ul>
+        </div>
+        <div class="construtecho-header__certifications">
+          <img src="https://50749235.fs1.hubspotusercontent-na1.net/hubfs/50749235/certifications-construtecho.jpg" />
+        </div>
+      </div>
 
-    <section>
-      <h2>Detalle de artículos</h2>
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 12%;">CANTIDAD</th>
-            <th style="width: 25%;">NOMBRE DEL ARTÍCULO</th>
-            <th style="width: 29%;">DESCRIPCIÓN DEL SERVICIO</th>
-            <th style="width: 17%;">PRECIO UNITARIO</th>
-            <th style="width: 17%;">TOTAL</th>
-          </tr>
-        </thead>
-        <tbody>
+      <!-- ===== INFO ===== -->
+      <div class="construtecho-info">
+        <div class="construtecho-info__project-data">
+          <table>
+            <tr>
+              <td>Empresa:</td>
+              <td>{{companyName}}</td>
+            </tr>
+            <tr>
+              <td># Proyecto:</td>
+              <td>{{projectNumber}}</td>
+            </tr>
+            <tr>
+              <td>Contacto:</td>
+              <td>{{contactName}}</td>
+            </tr>
+            <tr>
+              <td>Dirección Proyecto:</td>
+              <td>{{projectAddress}}</td>
+            </tr>
+            <tr>
+              <td>Vigencia:</td>
+              <td>{{validity}}</td>
+            </tr>
+            <tr>
+              <td>Tiempo de Entrega de materiales:</td>
+              <td>{{deliveryTime}}</td>
+            </tr>
+            <tr>
+              <td>Tiempo de ejecución:</td>
+              <td>{{executionTime}}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="construtecho-info__quote-data">
+          <table>
+            <tr>
+              <td>Asesor:</td>
+              <td>{{advisorName}}</td>
+            </tr>
+            <tr>
+              <td>Obra:</td>
+              <td>{{workName}}</td>
+            </tr>
+            <tr>
+              <td>Lugar de entrega:</td>
+              <td>{{deliveryPlace}}</td>
+            </tr>
+            <tr>
+              <td>Moneda:</td>
+              <td>{{currency}}</td>
+            </tr>
+            <tr>
+              <td>Tasa de cambio:</td>
+              <td>{{exchangeRate}}</td>
+            </tr>
+            <tr>
+              <td>Garantía:</td>
+              <td>{{warranty}}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="construtecho-info__other-data">
+          <table>
+            <tr>
+              <td>fecha:</td>
+              <td>{{date}}</td>
+            </tr>
+            <tr>
+              <td># registro:</td>
+              <td>{{registryNumber}}</td>
+            </tr>
+            <tr>
+              <td>Teléfonos:</td>
+              <td>{{phones}}</td>
+            </tr>
+            <tr>
+              <td>Sucursal:</td>
+              <td>{{branch}}</td>
+            </tr>
+            <tr>
+              <td>Condición de Pago:</td>
+              <td>{{paymentCondition}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== PRODUCTS ===== -->
+      <div class="construtecho-products">
+        <table class="quote-table">
+          <thead>
+            <tr>
+              <th class="col-qty">CANTIDAD</th>
+              <th class="col-name">NOMBRE DEL ARTÍCULO</th>
+              <th class="col-desc">DESCRIPCIÓN DEL SERVICIO</th>
+              <th class="col-price">PRECIO UNITARIO</th>
+              <th class="col-total">TOTAL</th>
+            </tr>
+          </thead>
+
           {{lineItemRows}}
-        </tbody>
-      </table>
-    </section>
+
+          <!-- TOTALES -->
+          <tbody class="totals-block">
+            <tr class="totals-row">
+              <td colspan="3" style="border: none;"></td>
+              <td>SUBTOTAL</td>
+              <td class="text-right">{{subtotal}}</td>
+            </tr>
+            <tr class="totals-row">
+              <td colspan="3" style="border: none;"></td>
+              <td>IVA 12%</td>
+              <td class="text-right">{{tax}}</td>
+            </tr>
+            <tr class="grand-total">
+              <td colspan="3" style="border: none;"></td>
+              <td>TOTAL GENERAL</td>
+              <td class="text-right">{{grandTotal}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
   </body>
 </html>
