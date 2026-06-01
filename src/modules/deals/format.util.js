@@ -12,7 +12,10 @@ export function escapeHtml(value) {
 
 export function multilineToHtml(value) {
   if (value == null || value === '') return '';
-  return escapeHtml(value).replaceAll('\n', '<br>');
+  return escapeHtml(value)
+    .replaceAll('\r\n', '\n')
+    .replaceAll('\r', '\n')
+    .replaceAll('\n', '<br>');
 }
 
 export function formatNumber(value) {
@@ -42,13 +45,25 @@ export function formatDate(value, timeZone) {
     ? new Date(Number(value))
     : new Date(value);
   if (Number.isNaN(date.getTime())) return '';
-  const parts = new Intl.DateTimeFormat('es-GT', {
+  const options = {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
     year: 'numeric',
-    timeZone: timeZone || DEFAULT_TIME_ZONE,
-  }).formatToParts(date);
+  };
+  let formatter;
+  try {
+    formatter = new Intl.DateTimeFormat('es-GT', {
+      ...options,
+      timeZone: timeZone || DEFAULT_TIME_ZONE,
+    });
+  } catch {
+    formatter = new Intl.DateTimeFormat('es-GT', {
+      ...options,
+      timeZone: DEFAULT_TIME_ZONE,
+    });
+  }
+  const parts = formatter.formatToParts(date);
   const get = (type) => parts.find((p) => p.type === type)?.value ?? '';
   return `${get('weekday')}, ${get('month')} ${get('day')}, ${get('year')}`;
 }

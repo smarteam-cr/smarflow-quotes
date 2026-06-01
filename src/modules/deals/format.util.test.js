@@ -50,3 +50,14 @@ test('formatDate usa la zona del portal y el orden del mockup', () => {
   assert.equal(formatDate(null, 'America/Guatemala'), '');
   assert.equal(formatDate('no-es-fecha', 'America/Guatemala'), '');
 });
+
+test('formatDate cae al timezone por defecto si el tz es inválido', () => {
+  assert.equal(
+    formatDate('2026-01-27T12:00:00.000Z', 'Garbage/TZ'),
+    'martes, enero 27, 2026',
+  );
+});
+
+test('multilineToHtml normaliza saltos de Windows (\\r\\n)', () => {
+  assert.equal(multilineToHtml('a\r\nb'), 'a<br>b');
+});
