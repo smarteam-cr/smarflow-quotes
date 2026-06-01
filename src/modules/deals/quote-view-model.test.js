@@ -119,3 +119,16 @@ test('amount nulo → total de línea vacío', () => {
   const vm = buildQuoteViewModel(raw);
   assert.equal(vm.categories[0].items[0].total, '');
 });
+
+test('owner sin nombre → asesor solo con email entre paréntesis', () => {
+  const vm = buildQuoteViewModel(baseRaw({ owner: { firstName: undefined, lastName: undefined, email: 'x@y.com' } }));
+  assert.equal(vm.asesor, '(x@y.com)');
+});
+
+test('despiece con solo espacios va a "Sin categoría"', () => {
+  const raw = baseRaw();
+  raw.lineItems = [{ properties: { quantity: '1', name: 'X', description: '', price: '10', amount: '10', despiece: '   ' } }];
+  const vm = buildQuoteViewModel(raw);
+  assert.equal(vm.categories.length, 1);
+  assert.equal(vm.categories[0].nombre, 'Sin categoría');
+});
