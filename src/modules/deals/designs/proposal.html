@@ -156,11 +156,12 @@
       }
 
       /* Anchos de columna */
-      .quote-table .col-qty { width: 10%; }
-      .quote-table .col-name { width: 30%; }
-      .quote-table .col-desc { width: 26%; }
-      .quote-table .col-price { width: 17%; }
-      .quote-table .col-total { width: 17%; }
+      .quote-table .col-qty { width: 8%; }
+      .quote-table .col-name { width: 24%; }
+      .quote-table .col-tech { width: 22%; }
+      .quote-table .col-desc { width: 22%; }
+      .quote-table .col-price { width: 12%; }
+      .quote-table .col-total { width: 12%; }
 
       /* Fila de sección/categoría */
       .section-row td {
@@ -355,6 +356,7 @@
             <tr>
               <th class="col-qty">CANTIDAD</th>
               <th class="col-name">NOMBRE DEL ARTÍCULO</th>
+              <th class="col-tech">DATOS TÉCNICOS</th>
               <th class="col-desc">DESCRIPCIÓN DEL SERVICIO</th>
               <th class="col-price">PRECIO UNITARIO</th>
               <th class="col-total">TOTAL</th>
@@ -366,17 +368,17 @@
           <!-- TOTALES -->
           <tbody class="totals-block">
             <tr class="totals-row">
-              <td colspan="3" style="border: none;"></td>
+              <td colspan="4" style="border: none;"></td>
               <td>SUBTOTAL</td>
               <td class="text-right">{{subtotal}}</td>
             </tr>
             <tr class="totals-row">
-              <td colspan="3" style="border: none;"></td>
+              <td colspan="4" style="border: none;"></td>
               <td>IVA 12%</td>
               <td class="text-right">{{tax}}</td>
             </tr>
             <tr class="grand-total">
-              <td colspan="3" style="border: none;"></td>
+              <td colspan="4" style="border: none;"></td>
               <td>TOTAL GENERAL</td>
               <td class="text-right">{{grandTotal}}</td>
             </tr>
