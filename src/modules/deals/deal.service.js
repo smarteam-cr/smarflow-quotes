@@ -2,27 +2,29 @@ import { Client } from '@hubspot/api-client';
 import puppeteer from 'puppeteer';
 import { badRequest, serverError } from '../../utils/errors.js';
 import { buildProposalHtml } from './proposal-template.js';
+import { buildQuoteViewModel } from './quote-view-model.js';
+import { createHubspotQuoteRepository } from './hubspot-quote.repository.js';
+import {
+  getAssociationIds,
+  resolvePrimaryQuoteId,
+  resolvePrincipalContactId,
+} from './hubspot-associations.js';
 
-const DEAL_PROPERTIES = ['dealname', 'amount', 'pipeline', 'dealstage'];
-const DEAL_ASSOCIATIONS = ['companies', 'contacts', 'line_items'];
-const COMPANY_PROPERTIES = ['name', 'domain'];
-const CONTACT_PROPERTIES = ['email', 'firstname', 'lastname'];
-const LINE_ITEM_PROPERTIES = ['name', 'price', 'quantity', 'description'];
+const DEFAULT_TIME_ZONE = 'America/Guatemala';
 
 export function createDealService({ hubspotAccessToken, logger, storage }) {
   const hubspotClient = hubspotAccessToken
-    ? new Client({
-        accessToken: hubspotAccessToken,
-        numberOfApiCallRetries: 3,
-      })
+    ? new Client({ accessToken: hubspotAccessToken, numberOfApiCallRetries: 3 })
+    : null;
+  const repo = hubspotClient
+    ? createHubspotQuoteRepository({ hubspotClient, logger })
     : null;
 
   async function sendQuote(dealId) {
     if (!dealId) {
       throw badRequest('dealId is required');
     }
-
-    if (!hubspotClient) {
+    if (!repo) {
       throw serverError(
         'HubSpot access token is required. Set HUBSPOT_ACCESS_TOKEN or HUBSPOT_PRIVATE_APP_TOKEN.',
       );
@@ -30,92 +32,64 @@ export function createDealService({ hubspotAccessToken, logger, storage }) {
 
     logger.info({ dealId }, 'Fetching deal data from HubSpot');
 
-    const deal = await hubspotClient.crm.deals.basicApi.getById(
-      dealId,
-      DEAL_PROPERTIES,
-      undefined,
-      DEAL_ASSOCIATIONS,
-    );
+    const deal = await repo.getDeal(dealId);
     const associations = deal.associations ?? {};
-    const companyIds = getAssociationIds(associations, 'companies');
-    const contactIds = getAssociationIds(associations, 'contacts');
-    const lineItemIds = getAssociationIds(
-      associations,
-      'line_items',
-      'line items',
-    );
+    const primaryQuoteId = resolvePrimaryQuoteId(associations);
+    const principalContactId = resolvePrincipalContactId(associations);
+    const companyId = getAssociationIds(associations, 'companies')[0] ?? null;
+    const lineItemIds = getAssociationIds(associations, 'line_items', 'line items');
+    const ownerId = deal.properties?.hubspot_owner_id ?? null;
+    const pipelineId = deal.properties?.pipeline ?? null;
 
-    const [companies, contacts, lineItems] = await Promise.all([
-      batchReadObjects(
-        hubspotClient.crm.companies.batchApi,
-        companyIds,
-        COMPANY_PROPERTIES,
-      ),
-      batchReadObjects(
-        hubspotClient.crm.contacts.batchApi,
-        contactIds,
-        CONTACT_PROPERTIES,
-      ),
-      batchReadObjects(
-        hubspotClient.crm.lineItems.batchApi,
-        lineItemIds,
-        LINE_ITEM_PROPERTIES,
-      ),
-    ]);
+    const [quote, contact, company, lineItems, owner, pipelineLabel, timeZone] =
+      await Promise.all([
+        primaryQuoteId ? repo.getQuote(primaryQuoteId) : null,
+        principalContactId ? repo.getContact(principalContactId) : null,
+        companyId ? repo.getCompany(companyId) : null,
+        repo.getLineItems(lineItemIds),
+        ownerId
+          ? repo.getOwner(ownerId).catch((err) => {
+              logger.warn({ ownerId, err: err.message }, 'owner lookup failed');
+              return null;
+            })
+          : null,
+        pipelineId
+          ? repo.getPipelineLabel(pipelineId).catch((err) => {
+              logger.warn({ pipelineId, err: err.message }, 'pipeline lookup failed');
+              return '';
+            })
+          : '',
+        repo.getPortalTimeZone().catch(() => DEFAULT_TIME_ZONE),
+      ]);
 
-    const payload = {
+    const viewModel = buildQuoteViewModel({
+      deal,
+      company,
+      contact,
+      quote,
+      lineItems,
+      owner,
+      pipelineLabel,
+      timeZone,
+    });
+
+    const html = await buildProposalHtml(viewModel);
+    const pdf = await createProposalPdf(html, dealId, storage);
+    await repo.saveQuoteUrl(dealId, pdf.url);
+
+    logger.info({ dealId, url: pdf.url }, 'Quote PDF generated');
+
+    return {
       dealId,
       generatedAt: new Date().toISOString(),
-      deal: {
-        id: deal.id,
-        properties: deal.properties,
-        createdAt: deal.createdAt,
-        updatedAt: deal.updatedAt,
-        archived: deal.archived,
-        associations,
-      },
-      companies,
-      contacts,
-      lineItems,
+      pdf: { key: pdf.key, url: pdf.url },
     };
-    const pdf = await createProposalPdf(payload, storage);
-    payload.pdf = {
-      key: pdf.key,
-      url: pdf.url,
-    };
-
-    logger.info({ dealId }, 'Deal quote data fetched');
-
-    return payload;
   }
 
-  return {
-    sendQuote,
-  };
+  return { sendQuote };
 }
 
-function getAssociationIds(associations, ...associationKeys) {
-  const ids = associationKeys.flatMap((associationKey) =>
-    (associations[associationKey]?.results ?? []).map((result) => result.id),
-  );
-
-  return [...new Set(ids)];
-}
-
-async function batchReadObjects(batchApi, ids, properties) {
-  if (ids.length === 0) {
-    return [];
-  }
-
-  const response = await batchApi.read({
-    inputs: ids.map((id) => ({ id })),
-    properties,
-  });
-
-  return response.results ?? [];
-}
-
-async function createProposalPdf(quoteData, storage) {
+async function createProposalPdf(html, dealId, storage) {
   if (!storage) {
     throw serverError('R2 storage plugin is required to upload proposal PDFs.');
   }
@@ -131,29 +105,17 @@ async function createProposalPdf(quoteData, storage) {
 
   try {
     const page = await browser.newPage();
-
-    const proposalHtml = await buildProposalHtml();
-
-    await page.setContent(proposalHtml, {
+    await page.setContent(html, {
       timeout: 15000,
       waitUntil: 'networkidle0',
     });
     const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true,
-      margin: {
-        top: '18mm',
-        right: '14mm',
-        bottom: '18mm',
-        left: '14mm',
-      },
+      margin: { top: '18mm', right: '14mm', bottom: '18mm', left: '14mm' },
     });
-    const key = `quotes/propuesta-${quoteData.dealId}-${Date.now()}.pdf`;
-
-    return storage.uploadPdf({
-      key,
-      body: pdfBuffer,
-    });
+    const key = `quotes/propuesta-${dealId}-${Date.now()}.pdf`;
+    return storage.uploadPdf({ key, body: pdfBuffer });
   } finally {
     await browser.close();
   }
