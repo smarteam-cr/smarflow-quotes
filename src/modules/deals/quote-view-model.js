@@ -47,9 +47,9 @@ export function buildQuoteViewModel(raw) {
     sucursal: escapeHtml(lastWord(pipelineLabel)),
     condicionPago: multilineToHtml(dp.condicion_de_pago ?? ''),
     categories: buildCategories(lineItems, currencyCode),
-    subtotal: quote ? formatMoney(qp.hs_tcv, currencyCode) : '',
-    iva: quote ? formatMoney(qp.hs_tax_total, currencyCode) : '',
-    totalGeneral: quote ? formatMoney(qp.hs_quote_amount, currencyCode) : '',
+    subtotal: quote ? escapeHtml(formatMoney(qp.hs_tcv, currencyCode)) : '',
+    iva: quote ? escapeHtml(formatMoney(qp.hs_tax_total, currencyCode)) : '',
+    totalGeneral: quote ? escapeHtml(formatMoney(qp.hs_quote_amount, currencyCode)) : '',
   };
 }
 
@@ -92,8 +92,8 @@ function buildCategories(lineItems, currencyCode) {
       nombre: escapeHtml(p.name ?? ''),
       datosTecnicos: multilineToHtml(p.datos_tecnicos ?? ''),
       descripcion: multilineToHtml(p.description ?? ''),
-      precioUnitario: formatMoney(p.price, currencyCode),
-      total: formatMoney(p.amount, currencyCode),
+      precioUnitario: escapeHtml(formatMoney(p.price, currencyCode)),
+      total: escapeHtml(formatMoney(p.amount, currencyCode)),
     });
   }
 
