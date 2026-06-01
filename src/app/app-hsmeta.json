@@ -18,7 +18,10 @@
         "crm.objects.line_items.write",
         "crm.schemas.line_items.read",
         "crm.objects.line_items.read",
-        "e-commerce"
+        "e-commerce",
+        "crm.objects.quotes.read",
+        "crm.objects.owners.read",
+        "account-info.security.read"
       ],
       "optionalScopes": [],
       "conditionallyRequiredScopes": []
