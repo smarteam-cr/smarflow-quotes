@@ -237,6 +237,141 @@
       .totals-block {
         break-inside: avoid;
       }
+
+      /* ===== ÚLTIMA HOJA: TÉRMINOS Y CONDICIONES (estática) ===== */
+      .terminos-page {
+        margin-top: 24px;
+        color: #000;
+        line-height: 1.3;
+      }
+
+      .terminos-page .formas-pago-title {
+        font-weight: 700;
+        font-size: 11px;
+        margin-bottom: 4px;
+      }
+
+      .terminos-page .formas-pago p {
+        font-size: 10px;
+        margin-bottom: 2px;
+      }
+
+      .terminos-page .banco-title {
+        font-weight: 700;
+        font-size: 10px;
+        margin-top: 4px;
+        margin-bottom: 2px;
+      }
+
+      .terminos-page .cuenta-row {
+        display: grid;
+        grid-template-columns: 180px auto;
+        font-size: 10px;
+        margin-bottom: 1px;
+      }
+
+      .terminos-page .firmas {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 30px;
+        margin-top: 40px;
+        margin-bottom: 16px;
+        break-inside: avoid;
+      }
+
+      .terminos-page .firma {
+        text-align: center;
+        break-inside: avoid;
+      }
+
+      .terminos-page .firma .linea {
+        border-top: 1.5px solid #000;
+        margin-bottom: 4px;
+      }
+
+      .terminos-page .firma .empresa,
+      .terminos-page .firma .nombre,
+      .terminos-page .firma .cargo {
+        font-weight: 700;
+        font-size: 10px;
+      }
+
+      .terminos-page .terminos-titulo {
+        text-align: center;
+        font-weight: 700;
+        font-size: 16px;
+        margin: 16px 0 6px;
+        letter-spacing: 0.5px;
+      }
+
+      .terminos-page .terminos-intro {
+        font-size: 10px;
+        text-align: left;
+        margin-bottom: 4px;
+        line-height: 1.3;
+      }
+
+      .terminos-page .seccion {
+        font-weight: 700;
+        font-size: 11px;
+        margin: 6px 0 2px;
+        break-after: avoid;
+      }
+
+      .terminos-page ol.terminos {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .terminos-page ol.terminos li {
+        font-size: 10px;
+        padding-left: 22px;
+        position: relative;
+        margin-bottom: 2px;
+        line-height: 1.3;
+        text-align: left;
+        break-inside: avoid;
+      }
+
+      .terminos-page ol.terminos li .num {
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-weight: 700;
+      }
+
+      .terminos-page .footer {
+        margin-top: 24px;
+        text-align: center;
+        break-inside: avoid;
+      }
+
+      .terminos-page .footer .bar {
+        background: #0d2a5c;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 11px;
+        padding: 4px 8px;
+        letter-spacing: 0.3px;
+      }
+
+      .terminos-page .footer .addr {
+        font-size: 10px;
+        padding: 3px 0 1px;
+      }
+
+      .terminos-page .footer .tel {
+        font-weight: 700;
+        font-size: 10px;
+        padding: 1px 0;
+      }
+
+      .terminos-page .footer .countries {
+        font-weight: 700;
+        font-size: 10px;
+        padding: 1px 0 4px;
+      }
     </style>
   </head>
 
@@ -384,6 +519,133 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- ===== ÚLTIMA HOJA: TÉRMINOS Y CONDICIONES (estática) ===== -->
+      <div class="terminos-page">
+
+        <!-- Formas de pago -->
+        <div class="formas-pago">
+          <p class="formas-pago-title">FORMAS DE PAGO</p>
+          <p>En caso de realizar el pago con cheque, emitir a (CONSTRULOGIX, SA)</p>
+          <p>En caso de realizar mediante transferencia bancaria compartimos nuestros números de cuenta</p>
+          <p class="banco-title">BANCO INDUSTRIAL</p>
+          <div class="cuenta-row"><span>Monetaria Quetzales</span><span>822-000364-7</span></div>
+          <div class="cuenta-row"><span>Monetaria Dolares</span><span>822-000365-4</span></div>
+        </div>
+
+        <!-- Firmas (primer bloque) -->
+        <div class="firmas">
+          <div class="firma">
+            <div class="linea"></div>
+            <p class="empresa">CONSTRUTECHO</p>
+            <p class="nombre">Ing. Fernando Castellón</p>
+            <p class="cargo">Director General</p>
+          </div>
+          <div class="firma">
+            <div class="linea"></div>
+            <p class="empresa">CONSTRUTECHO</p>
+            <p class="nombre">Ing. Andres Mendoza</p>
+            <p class="cargo">Asesor Comercial</p>
+          </div>
+          <div class="firma aceptado">
+            <div class="linea"></div>
+            <p class="empresa">FIRMA Y SELLO DE ACEPTADO</p>
+          </div>
+        </div>
+
+        <!-- Términos y condiciones -->
+        <h1 class="terminos-titulo">TÉRMINOS Y CONDICIONES</h1>
+
+        <p class="terminos-intro">
+          Al firmar la presente propuesta, el CLIENTE declara expresamente haber leído, comprendido y aceptado todas y cada una de las condiciones generales aquí descritas. Dichas condiciones forman parte integral de la propuesta comercial y serán vinculantes para ambas partes. Cualquier modificación o excepción solo tendrá validez si consta por escrito y está suscrita por ambos representantes legales.
+        </p>
+
+        <p class="seccion">I. CONDICIONES ECONÓMICAS Y DE PAGO</p>
+        <ol class="terminos">
+          <li><span class="num">1.</span>Hasta no darse el anticipo estipulado, el presente presupuesto queda sujeto a modificación de precios.</li>
+          <li><span class="num">2.</span>De no cumplirse los términos de pago estipulados, nos reservamos el inicio de la instalación hasta que se cumplan los mismos.</li>
+          <li><span class="num">3.</span>CONSTRULOGIX, S.A. se reserva el derecho a detener los trabajos y/o suministro de materiales si las condiciones de pago de la presente propuesta no se cumplen; los costos por movilización y desmovilización de personal y equipo por estos paros deberán ser costeados por el cliente.</li>
+          <li><span class="num">4.</span>El pago de cualquier cambio posterior a la aprobación de esta propuesta será responsabilidad exclusiva del cliente, sin afectar la cancelación del contrato inicial.</li>
+          <li><span class="num">5.</span>La venta se realiza con reserva de dominio a favor de CONSTRULOGIX, S.A. hasta que se haya pagado la totalidad del presupuesto aprobado. Dicha reserva se anula únicamente con el pago total.</li>
+          <li><span class="num">6.</span>Los cambios o extras una vez recibido el anticipo están sujetos a fechas de entrega distintas al resto de la obra.</li>
+          <li><span class="num">7.</span>Cualquier cambio de medida, diseño o ubicación durante el proceso de producción o instalación tendrá un costo extra el cuál será integrado y trasladado al cliente.</li>
+          <li><span class="num">8.</span>Proceso de estimaciones de trabajo: El residente por parte del cliente, luego de recibir una estimación de trabajo, tiene 3 días calendario para responder sobre esta; de no contar con una respuesta al finalizar este plazo, CONSTRULOGIX, S.A. dará por aceptada la estimación y procederá a facturarla según el proceso administrativo del cliente.</li>
+        </ol>
+
+        <p class="seccion">II. EXCLUSIONES, LIMITACIONES TÉCNICAS Y ALCANCE NO INCLUIDO</p>
+        <ol class="terminos">
+          <li><span class="num">9.</span>No se incluye el costo por servicios sanitarios, salvo que los renglones de la oferta indiquen lo contrario.</li>
+          <li><span class="num">10.</span>No se incluye ningún tipo de trámite o pago para licencias o permisos.</li>
+          <li><span class="num">11.</span>No se incluye el costo de ningún tipo de fianza, salvo que los renglones de la oferta indiquen lo contrario.</li>
+          <li><span class="num">12.</span>No se incluye el costo por ningún tipo de perforación para paso de tuberías y/o ductos, ni anulación de caídas por instalación de equipos en techo y/o forros, salvo que los renglones de la oferta indiquen lo contrario.</li>
+          <li><span class="num">13.</span>No se incluyen sistemas de elevación mecánica (grúa) para izar la lámina y/o roladora; estos deben ser suministrados por el cliente. En caso se requiera rolado en techo, CONSTRULOGIX, S.A. se encargará de suministrar el andamio para colocación de roladora, pero la grúa para el izaje y movimiento de esta debe ser suministrada por el cliente.</li>
+          <li><span class="num">14.</span>No se incluye el costo por tener inscrito al personal operativo en planilla de IGSS; se considera tenerlos dentro de una póliza de seguro privado contra accidentes.</li>
+          <li><span class="num">15.</span>No se incluye el costo por casco rojo (monitor SySO) con supervisión fija en la obra. Se incluyen únicamente visitas esporádicas de monitores de SySO, salvo que los renglones de la oferta indiquen lo contrario.</li>
+          <li><span class="num">16.</span>El sistema ofertado es impermeable, pero no incluye elementos ni acabados especiales para inocuidad, control de ingreso de luz, sellos sanitarios ni otros requisitos específicos del giro comercial del cliente (retail, alimentos, etc.). Cualquier adaptación será cotizada como adicional previa solicitud y aprobación, salvo que los renglones de la oferta indiquen lo contrario.</li>
+        </ol>
+
+        <p class="seccion">III. ESPECIFICACIONES TÉCNICAS Y CALIDAD ESTÉTICA</p>
+        <ol class="terminos">
+          <li><span class="num">17.</span>Para iniciar producción se requiere firma de planos taller por parte del cliente, así como aprobación de muestra y color.</li>
+          <li><span class="num">18.</span>Se fabricará en base a medidas finales del área y diseños aprobados por el cliente, siendo responsabilidad del mismo el pago de cualquier cambio en áreas y diseños al presupuesto original, esté o no fabricado el producto. Quedando sujetas a una nueva calendarización según disponibilidades y nuevos términos de pago.</li>
+          <li><span class="num">19.</span>Variación de color: Se informa que pueden existir variaciones en las tonalidades de la lámina, incluso usando el mismo código RAL, debido a procesos industriales, lotes de fabricación y condiciones de curado. No serán motivo de reclamo, rechazo o sustitución, siempre que la variación de color no exceda ΔE ≤ 4.0 según norma CIE76, considerada estándar en la industria de recubrimientos arquitectónicos.</li>
+        </ol>
+
+        <p class="seccion">IV. REQUISITOS Y RESPONSABILIDADES DEL CLIENTE</p>
+        <ol class="terminos">
+          <li><span class="num">20.</span>En caso de no contar con área de almacenaje en obra, se incurrirá en gastos extras por traslados desde nuestra bodega al punto de instalación. Estos gastos correrán por cuenta del cliente.</li>
+          <li><span class="num">21.</span>Para mantener la garantía, cualquier trabajo a ejecutar sobre la cubierta deberá ser autorizado por escrito por CONSTRULOGIX, S.A.; de no existir autorización formal, CONSTRULOGIX, S.A. no se hace responsable por los problemas causados por tales intervenciones, incluyendo pero no limitando a sistemas de aire acondicionado, tuberías eléctricas, instalaciones de telecomunicaciones, ventilaciones, entre otras.</li>
+          <li><span class="num">22.</span>El cliente se compromete a proporcionar espacios limpios y adecuados para el almacenamiento del producto en la obra durante la instalación, así como también un espacio para bodega adecuada y segura para herramientas y materiales.</li>
+          <li><span class="num">23.</span>El cliente debe proporcionar energía eléctrica (110/220V) a una distancia no mayor de 30 metros del lugar de instalación. CONSTRULOGIX, S.A. no es responsable por atrasos ocasionados por la falta de la misma.</li>
+          <li><span class="num">24.</span>El cliente deberá proveer servicios sanitarios para el uso del personal de CONSTRULOGIX, S.A. de manera que se cumpla la normativa de SySO sobre personal máximo asignado a 1 unidad de baño.</li>
+          <li><span class="num">25.</span>El cliente se compromete a entregar las áreas o vanos 100% terminadas, niveladas, a plomo, limpias de mezcla u otros materiales y libres de obstáculos.</li>
+        </ol>
+
+        <p class="seccion">V. CONDICIONES DE EJECUCIÓN Y ENTREGA</p>
+        <ol class="terminos">
+          <li><span class="num">26.</span>Si por alguna razón ajena a CONSTRULOGIX, S.A. no se puede iniciar o continuar con la instalación, la fecha de entrega será reprogramada, sin responsabilidad para la empresa.</li>
+          <li><span class="num">27.</span>La presente propuesta está realizada considerando que siempre existirán áreas de trabajo listas para evitar incurrir en costos extras por tiempos muertos y/o movilización y desmovilización de personal. En caso contrario, CONSTRULOGIX, S.A. trasladará el costo al cliente.</li>
+        </ol>
+
+        <p class="seccion">VI. LÍMITES DE RESPONSABILIDAD Y RIESGOS</p>
+        <ol class="terminos">
+          <li><span class="num">28.</span>CONSTRULOGIX, S.A. no se hace responsable del daño ocasionado al producto por trabajos de terceros en obra, durante y/o después de instalada.</li>
+          <li><span class="num">29.</span>CONSTRULOGIX, S.A. no se hace responsable por cualquier atraso ocasionado por terceros (navieras, gestores de aduanas, SAT), dichos atrasos serán adicionados al tiempo contractual.</li>
+          <li><span class="num">30.</span>CONSTRULOGIX, S.A. no se hace responsable, una vez los productos cotizados ingresen a obra, por pérdidas o daños provocados por fenómenos naturales, siendo estos responsabilidad del cliente.</li>
+          <li><span class="num">31.</span>CONSTRULOGIX, S.A. no se hace responsable por daños causados por trabajos de albañilería, incluyendo pero no limitándose a cortes, perforaciones, golpes, deformaciones, manchas u otros daños ocasionados durante o después de la ejecución de dichos trabajos.</li>
+          <li><span class="num">32.</span>CONSTRULOGIX, S.A. no se hace responsable por robo o daño a materiales y equipo dentro de la obra.</li>
+        </ol>
+
+        <!-- Firmas (segundo bloque) -->
+        <div class="firmas">
+          <div class="firma">
+            <div class="linea"></div>
+            <p class="empresa">CONSTRUTECHO</p>
+            <p class="nombre">Ing. Fernando Castellón</p>
+            <p class="cargo">Director General</p>
+          </div>
+          <div class="firma">
+            <div class="linea"></div>
+            <p class="empresa">CONSTRUTECHO</p>
+            <p class="nombre">Ing. Andres Mendoza</p>
+            <p class="cargo">Asesor Comercial</p>
+          </div>
+          <div class="firma aceptado">
+            <div class="linea"></div>
+            <p class="empresa">FIRMA Y SELLO DE ACEPTADO</p>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+          <div class="bar">CONSTRULOGIX, S.A.</div>
+          <div class="addr">KM 16.5 CARRETERA A SAN JOSÉ PINULA , OFIBODEGAS EL DORAL</div>
+          <div class="tel">TEL.: (+502) 6676-6874</div>
+          <div class="countries">GUATEMALA - EL SALVADOR - HONDURAS - NICARAGUA- COSTA RICA - PANAMÁ - COLOMBIA</div>
+          <div class="bar">CONSTRUTECHO CENTROAMÉRICA | SISTEMAS DE CUBIERTAS Y ACABADOS ARQUITECTÓNICOS</div>
+        </div>
+
       </div>
 
     </div>
