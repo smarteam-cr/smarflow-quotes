@@ -2,8 +2,8 @@
   "uid": "send_quote_private_static",
   "type": "card",
   "config": {
-    "name": "Enviar Cotización",
-    "description": "Crea un pdf de cotización a travéz de los servicios internos.",
+    "name": "Crear Cotización",
+    "description": "Crea un PDF de cotización a través de los servicios internos.",
     "entrypoint": "/app/cards/send-quote-app-card.tsx",
     "location": "crm.record.sidebar",
     "objectTypes": ["DEAL"]

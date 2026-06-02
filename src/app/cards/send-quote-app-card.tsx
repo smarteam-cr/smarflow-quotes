@@ -44,12 +44,12 @@ const Extension = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const dealId = String(crm.objectId);
 
-  const handleSendQuote = async () => {
+  const handleCreateQuote = async () => {
     setIsLoading(true);
     setErrorMsg(null);
 
     try {
-      logger.info(`Sending deal ID ${dealId} to Fastify API`);
+      logger.info(`Creating quote for deal ID ${dealId}`);
 
       const response = await hubspot.fetch(`${API_BASE_URL}/deals/send-quote`, {
         method: 'POST',
@@ -88,9 +88,9 @@ const Extension = () => {
       <LoadingButton
         variant="primary"
         loading={isLoading}
-        onClick={handleSendQuote}
+        onClick={handleCreateQuote}
       >
-        Enviar cotización
+        Crear cotización
       </LoadingButton>
 
       {result?.url ? (
