@@ -11,7 +11,9 @@ import {
 
 hubspot.extend<'crm.record.tab'>(() => <Extension />);
 
-const API_BASE_URL = 'https://jlsgpv2d-3000.use.devtunnels.ms';
+// URL anterior (devtunnel de otra persona), conservado por si se necesita:
+// const API_BASE_URL = 'https://jlsgpv2d-3000.use.devtunnels.ms';
+const API_BASE_URL = 'https://unrivalrous-rife-inocencia.ngrok-free.dev';
 
 const Extension = () => {
   const { crm } = useExtensionContext<'crm.record.tab'>();
@@ -27,7 +29,7 @@ const Extension = () => {
 
       const response = await hubspot.fetch(`${API_BASE_URL}/deals/send-quote`, {
         method: 'POST',
-        timeout: 10000,
+        timeout: 60000,
         body: { dealId },
       });
 

@@ -29,7 +29,8 @@
     "permittedUrls": {
       "fetch": [
         "https://api.hubapi.com",
-        "https://jlsgpv2d-3000.use.devtunnels.ms"
+        "https://jlsgpv2d-3000.use.devtunnels.ms",
+        "https://unrivalrous-rife-inocencia.ngrok-free.dev"
       ],
       "iframe": [],
       "img": []
