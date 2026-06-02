@@ -36,6 +36,7 @@ export function buildQuoteViewModel(raw) {
     tiempoEntrega: escapeHtml(dp.tiempo_de_entrega_de_materiales ?? ''),
     tiempoEjecucion: escapeHtml(dp.tiempo_de_ejecucion ?? ''),
     asesor: escapeHtml(buildOwnerLabel(owner)),
+    asesorNombre: escapeHtml(buildOwnerName(owner)),
     obra: escapeHtml(dp.obra ?? ''),
     lugarEntrega: escapeHtml(dp.lugar_de_entrega ?? ''),
     moneda: escapeHtml(currencySymbol(currencyCode)),
@@ -57,9 +58,14 @@ function buildContactName(ct) {
   return [ct.firstname, ct.lastname].filter(Boolean).join(' ').trim();
 }
 
+function buildOwnerName(owner) {
+  if (!owner) return '';
+  return [owner.firstName, owner.lastName].filter(Boolean).join(' ').trim();
+}
+
 function buildOwnerLabel(owner) {
   if (!owner) return '';
-  const name = [owner.firstName, owner.lastName].filter(Boolean).join(' ').trim();
+  const name = buildOwnerName(owner);
   const email = owner.email ?? '';
   if (name && email) return `${name} (${email})`;
   if (name) return name;

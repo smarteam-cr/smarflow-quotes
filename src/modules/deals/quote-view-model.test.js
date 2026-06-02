@@ -50,6 +50,7 @@ test('mapea campos de info', () => {
   assert.equal(vm.contacto, 'Karla Sierra');
   assert.equal(vm.direccionProyecto, 'Escuintla');
   assert.equal(vm.asesor, 'Jorge Arauz (jarauz@x.com)');
+  assert.equal(vm.asesorNombre, 'Jorge Arauz');
   assert.equal(vm.moneda, 'Q');
   assert.equal(vm.sucursal, 'Guatemala');
   assert.equal(vm.fecha, 'martes, enero 27, 2026');
@@ -111,6 +112,13 @@ test('sin contacto → contacto y teléfono vacíos', () => {
 test('owner QUEUE sin nombre ni email → asesor vacío', () => {
   const vm = buildQuoteViewModel(baseRaw({ owner: { firstName: undefined, lastName: undefined, email: undefined } }));
   assert.equal(vm.asesor, '');
+  assert.equal(vm.asesorNombre, '');
+});
+
+test('asesorNombre trae solo el nombre (sin email) para la firma', () => {
+  const vm = buildQuoteViewModel(baseRaw());
+  assert.equal(vm.asesorNombre, 'Jorge Arauz');
+  assert.ok(!vm.asesorNombre.includes('@'), 'la firma no debe incluir el correo');
 });
 
 test('amount nulo → total de línea vacío', () => {

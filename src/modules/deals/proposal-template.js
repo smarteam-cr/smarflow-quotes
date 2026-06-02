@@ -22,6 +22,7 @@ export async function buildProposalHtml(viewModel) {
     .replaceAll('{{deliveryTime}}', viewModel.tiempoEntrega)
     .replaceAll('{{executionTime}}', viewModel.tiempoEjecucion)
     .replaceAll('{{advisorName}}', viewModel.asesor)
+    .replaceAll('{{advisorSignatureName}}', viewModel.asesorNombre)
     .replaceAll('{{workName}}', viewModel.obra)
     .replaceAll('{{deliveryPlace}}', viewModel.lugarEntrega)
     .replaceAll('{{currency}}', viewModel.moneda)

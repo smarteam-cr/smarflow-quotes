@@ -11,6 +11,7 @@ const viewModel = {
   tiempoEntrega: 'línea1<br>línea2',
   tiempoEjecucion: 'Según obra',
   asesor: 'Jorge Arauz (jarauz@x.com)',
+  asesorNombre: 'Jorge Arauz',
   obra: 'MABE',
   lugarEntrega: 'Proyecto',
   moneda: 'Q',
@@ -48,4 +49,9 @@ test('el HTML incluye categoría e items con 6 celdas', async () => {
 test('renderiza con categories vacío sin error', async () => {
   const html = await buildProposalHtml({ ...viewModel, categories: [] });
   assert.ok(!html.includes('{{'));
+});
+
+test('la firma del medio usa el nombre del asesor (sin email)', async () => {
+  const html = await buildProposalHtml(viewModel);
+  assert.ok(html.includes('<p class="nombre">Jorge Arauz</p>'));
 });
