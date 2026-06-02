@@ -15,7 +15,8 @@ hubspot.extend<'crm.record.tab'>(() => <Extension />);
 
 // URL anterior (devtunnel de otra persona), conservado por si se necesita:
 // const API_BASE_URL = 'https://jlsgpv2d-3000.use.devtunnels.ms';
-const API_BASE_URL = 'https://unrivalrous-rife-inocencia.ngrok-free.dev';
+// const API_BASE_URL = 'https://unrivalrous-rife-inocencia.ngrok-free.dev';
+const API_BASE_URL = 'https://smartquotes.smarteamcr.com/';
 
 interface QuoteResult {
   url: string;
