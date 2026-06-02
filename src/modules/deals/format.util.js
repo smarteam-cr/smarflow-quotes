@@ -1,4 +1,3 @@
-const CURRENCY_SYMBOLS = { GTQ: 'Q', USD: '$' };
 const DEFAULT_TIME_ZONE = 'America/Guatemala';
 
 export function escapeHtml(value) {
@@ -27,16 +26,11 @@ export function formatNumber(value) {
   }).format(number);
 }
 
-export function currencySymbol(code) {
-  if (!code) return '';
-  return CURRENCY_SYMBOLS[code] ?? code;
-}
-
 export function formatMoney(value, currencyCode) {
   const number = formatNumber(value);
   if (number === '') return '';
-  const symbol = currencySymbol(currencyCode);
-  return symbol ? `${symbol} ${number}` : number;
+  const code = currencyCode ? String(currencyCode).trim() : '';
+  return code ? `${code} ${number}` : number;
 }
 
 export function formatDate(value, timeZone) {

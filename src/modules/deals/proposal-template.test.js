@@ -14,7 +14,7 @@ const viewModel = {
   asesorNombre: 'Jorge Arauz',
   obra: 'MABE',
   lugarEntrega: 'Proyecto',
-  moneda: 'Q',
+  moneda: 'GTQ',
   tasaCambio: 'N/A',
   garantia: '18 meses',
   fecha: 'martes, enero 27, 2026',
@@ -24,12 +24,12 @@ const viewModel = {
   condicionPago: 'Anticipo 60%<br>Estimaciones 40%',
   categories: [
     { nombre: 'Cubierta', items: [
-      { cantidad: '15,600.00', nombre: 'Cubierta KR18', datosTecnicos: 'd1<br>d2', descripcion: 'SUMINISTRO', precioUnitario: 'Q 281.53', total: 'Q 4,391,868.00' },
+      { cantidad: '15,600.00', nombre: 'Cubierta KR18', datosTecnicos: 'd1<br>d2', descripcion: 'SUMINISTRO', precioUnitario: 'GTQ 281.53', total: 'GTQ 4,391,868.00' },
     ]},
   ],
-  subtotal: 'Q 4,693,849.80',
-  iva: 'Q 563,261.98',
-  totalGeneral: 'Q 5,257,111.77',
+  subtotal: 'GTQ 4,693,849.80',
+  iva: 'GTQ 563,261.98',
+  totalGeneral: 'GTQ 5,257,111.77',
 };
 
 test('el HTML resultante no deja placeholders sin reemplazar', async () => {
@@ -42,7 +42,7 @@ test('el HTML incluye categoría e items con 6 celdas', async () => {
   assert.ok(html.includes('Spectrum'));
   assert.ok(html.includes('colspan="6"'));
   assert.ok(html.includes('Cubierta KR18'));
-  assert.ok(html.includes('Q 4,391,868.00'));
+  assert.ok(html.includes('GTQ 4,391,868.00'));
   assert.ok(html.includes('d1<br>d2'));
 });
 

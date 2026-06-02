@@ -51,7 +51,7 @@ test('mapea campos de info', () => {
   assert.equal(vm.direccionProyecto, 'Escuintla');
   assert.equal(vm.asesor, 'Jorge Arauz (jarauz@x.com)');
   assert.equal(vm.asesorNombre, 'Jorge Arauz');
-  assert.equal(vm.moneda, 'Q');
+  assert.equal(vm.moneda, 'GTQ');
   assert.equal(vm.sucursal, 'Guatemala');
   assert.equal(vm.fecha, 'martes, enero 27, 2026');
   assert.equal(vm.vigencia, 'martes, enero 27, 2026');
@@ -75,8 +75,8 @@ test('agrupa line items por despiece en orden de aparición', () => {
   assert.equal(vm.categories[0].items.length, 2);
   assert.equal(vm.categories[1].nombre, 'Canales');
   assert.equal(vm.categories[0].items[0].cantidad, '15,600.00');
-  assert.equal(vm.categories[0].items[0].precioUnitario, 'Q 281.53');
-  assert.equal(vm.categories[0].items[0].total, 'Q 4,391,868.00');
+  assert.equal(vm.categories[0].items[0].precioUnitario, 'GTQ 281.53');
+  assert.equal(vm.categories[0].items[0].total, 'GTQ 4,391,868.00');
   assert.equal(vm.categories[0].items[0].datosTecnicos, 'd1<br>d2');
 });
 
@@ -89,9 +89,9 @@ test('items sin despiece van a "Sin categoría" al final', () => {
 
 test('totales vienen de la quote', () => {
   const vm = buildQuoteViewModel(baseRaw());
-  assert.equal(vm.subtotal, 'Q 4,693,849.80');
-  assert.equal(vm.iva, 'Q 563,261.98');
-  assert.equal(vm.totalGeneral, 'Q 5,257,111.77');
+  assert.equal(vm.subtotal, 'GTQ 4,693,849.80');
+  assert.equal(vm.iva, 'GTQ 563,261.98');
+  assert.equal(vm.totalGeneral, 'GTQ 5,257,111.77');
 });
 
 test('sin quote principal → totales vacíos', () => {

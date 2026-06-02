@@ -4,7 +4,6 @@ import {
   escapeHtml,
   multilineToHtml,
   formatNumber,
-  currencySymbol,
   formatMoney,
   formatDate,
 } from './format.util.js';
@@ -28,17 +27,11 @@ test('formatNumber formatea es-GT con 2 decimales', () => {
   assert.equal(formatNumber('abc'), '');
 });
 
-test('currencySymbol mapea códigos conocidos y cae al código', () => {
-  assert.equal(currencySymbol('GTQ'), 'Q');
-  assert.equal(currencySymbol('USD'), '$');
-  assert.equal(currencySymbol('EUR'), 'EUR');
-  assert.equal(currencySymbol(''), '');
-});
-
-test('formatMoney antepone el símbolo', () => {
-  assert.equal(formatMoney(4391868, 'GTQ'), 'Q 4,391,868.00');
-  assert.equal(formatMoney('281.53', 'USD'), '$ 281.53');
+test('formatMoney antepone el código de moneda', () => {
+  assert.equal(formatMoney(4391868, 'GTQ'), 'GTQ 4,391,868.00');
+  assert.equal(formatMoney('281.53', 'USD'), 'USD 281.53');
   assert.equal(formatMoney(100, 'EUR'), 'EUR 100.00');
+  assert.equal(formatMoney(50, ''), '50.00');
   assert.equal(formatMoney(null, 'GTQ'), '');
 });
 

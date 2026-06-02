@@ -4,7 +4,6 @@ import {
   formatNumber,
   formatMoney,
   formatDate,
-  currencySymbol,
 } from './format.util.js';
 
 const SIN_CATEGORIA = 'Sin categoría';
@@ -39,7 +38,7 @@ export function buildQuoteViewModel(raw) {
     asesorNombre: escapeHtml(buildOwnerName(owner)),
     obra: escapeHtml(dp.obra ?? ''),
     lugarEntrega: escapeHtml(dp.lugar_de_entrega ?? ''),
-    moneda: escapeHtml(currencySymbol(currencyCode)),
+    moneda: escapeHtml(currencyCode),
     tasaCambio: escapeHtml(dp.tasa_de_cambio ?? ''),
     garantia: escapeHtml(dp.garantia ?? ''),
     fecha: escapeHtml(formatDate(qp.hs_last_published_date, timeZone)),
