@@ -16,20 +16,22 @@ devuelve el URL. La card de HubSpot lo invoca por HTTPS.
 
 ## Fase 2 — Levantar el backend en el VPS
 
-### 2.1 (En tu máquina) Subir el código al remoto
+### 2.1 (En tu máquina) Mergear a main y subir
 El `.env` NO se sube (está en `.gitignore`). Desde el repo local:
 ```bash
-git push origin dfer/new-feature
+git checkout main
+git pull origin main
+git merge dfer/new-feature
+git push origin main
 ```
-> O, si ya está mergeado a `main`, usa la rama que vayas a desplegar.
 
 ### 2.2 (En el VPS) Clonar en la ruta del proyecto
 ```bash
 cd /opt/smartflow/Construtecho_Quotes
 git clone git@github.com:smarteam-cr/smarflow-quotes.git .
-git checkout dfer/new-feature
 ```
-**Comprobación:** `ls` debe mostrar `Dockerfile`, `docker-compose.yml`, `src/`, `package.json`.
+`main` es la rama por defecto, así que queda lista tras el clone.
+**Comprobación:** `ls` debe mostrar `Dockerfile`, `docker-compose.yml`, `src/`, `package.json`; `git branch --show-current` → `main`.
 
 ### 2.3 (En el VPS) Crear el `.env` de producción
 ```bash
