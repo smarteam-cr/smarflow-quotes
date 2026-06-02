@@ -1,0 +1,21 @@
+services:
+  api:
+    build: .
+    image: construtecho-quotes
+    container_name: construtecho-quotes
+    restart: unless-stopped
+    # init para reapear los procesos hijos que deja Chromium (evita zombies).
+    init: true
+    # Variables sensibles (token de HubSpot, credenciales R2) desde ./.env del host.
+    # No se hornean en la imagen.
+    env_file: ./.env
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      NODE_ENV: "production"
+    # Solo localhost: nginx hará de puente. NO se expone a internet directamente.
+    ports:
+      - "127.0.0.1:3003:3000"
+    # /dev/shm grande para que Chromium no crashee al renderizar.
+    shm_size: "1gb"
+    mem_limit: "1500m"
