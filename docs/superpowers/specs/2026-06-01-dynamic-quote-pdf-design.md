@@ -298,7 +298,7 @@ try {
 | Asesor | Deal → Owners | `hubspot_owner_id` | lookup → `Nombre Apellido (email)` |
 | Obra | Deal | `obra` | directo |
 | Lugar de entrega | Deal | `lugar_de_entrega` | directo |
-| Moneda | Deal | `deal_currency_code` | código ISO → símbolo (§9) |
+| Moneda | Deal | `deal_currency_code` | código ISO tal cual, ej. "GTQ" (§9.2) |
 | Tasa de cambio | Deal | `tasa_de_cambio` | directo |
 | Garantía | Deal | `garantia` | directo |
 | Fecha | Quote (principal) | `hs_last_published_date` | UTC → TZ portal → fecha |
@@ -371,13 +371,12 @@ CANTIDAD | NOMBRE DEL ARTÍCULO | DATOS TÉCNICOS | DESCRIPCIÓN DEL SERVICIO | 
   PDFs ya generados.
 
 ### 9.2 Moneda
-- Símbolo derivado de `deal_currency_code`. Mapa inicial (ampliar según las
-  monedas que el cliente use en la práctica):
-  `{ GTQ: 'Q', USD: '$' }`. Si el código no está en el mapa → usar el código tal
-  cual como prefijo.
-- Formato: `"<símbolo> <número>"` con número en formato es-GT (separador de miles
-  `,`, 2 decimales). Ej.: `Q 4,391,868.00`. Igual a los PDFs ya generados.
-- El campo "Moneda" de la sección de info muestra el símbolo (ej. "Q").
+- **Decisión final (actualizada):** se muestra el **código ISO tal cual** viene de
+  HubSpot en `deal_currency_code` (`GTQ`, `USD`, …). **No** se convierte a símbolo.
+- Formato: `"<código> <número>"` con número en formato es-GT (separador de miles
+  `,`, 2 decimales). Ej.: `GTQ 4,391,868.00`.
+- El campo "Moneda" de la sección de info muestra el código (ej. "GTQ").
+- Si el deal no trae código, el monto sale solo con el número (sin prefijo).
 
 ### 9.3 Multilínea
 - Campos `condicion_de_pago`, `datos_tecnicos`, `description` preservan `\n`.
@@ -444,7 +443,7 @@ Ya presentes: contacts/deals/companies/line_items (read+write donde aplica).
 1. Que `basicApi.getById` v3 del SDK exponga los labels `principal` /
    `deal_to_primary_quote`; si no, usar el fallback `apiRequest` al endpoint
    `2026-03` (§5.1).
-2. Las monedas reales que usa el cliente, para completar el mapa símbolo (§9.2).
+2. (Resuelto) Moneda: se muestra el código ISO tal cual; no hay mapa de símbolos.
 3. Anchos de columna definitivos con datos reales largos (§8).
 4. Que el orden de fecha del mockup ("martes, enero 27, 2026") quede idéntico
    (§9.1).

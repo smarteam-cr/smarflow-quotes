@@ -138,7 +138,8 @@ En el repo, cambiar el URL del túnel por el subdominio en DOS lugares:
 - `src/app/cards/send-quote-app-card.tsx` → `API_BASE_URL`
 - `src/app/app-hsmeta.json` → `config.permittedUrls.fetch`
 
-de `https://jlsgpv2d-3000.use.devtunnels.ms` a `https://cotizaciones.smarteamcr.com`.
+de la URL de túnel actual (`API_BASE_URL`, hoy un `*.ngrok-free.dev`) a
+`https://cotizaciones.smarteamcr.com` (tu subdominio de producción).
 
 ### 4.3 Autenticar el CLI a la cuenta del cliente
 ```bash
