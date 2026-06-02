@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import {
-  EmptyState,
+  Alert,
+  Flex,
+  Link,
   LoadingButton,
   Text,
   hubspot,
@@ -15,14 +17,36 @@ hubspot.extend<'crm.record.tab'>(() => <Extension />);
 // const API_BASE_URL = 'https://jlsgpv2d-3000.use.devtunnels.ms';
 const API_BASE_URL = 'https://unrivalrous-rife-inocencia.ngrok-free.dev';
 
+interface QuoteResult {
+  url: string;
+  generatedAt: string;
+}
+
+function formatGeneratedAt(iso: string): string {
+  if (!iso) {
+    return '';
+  }
+  try {
+    return new Intl.DateTimeFormat('es-GT', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(iso));
+  } catch {
+    return iso;
+  }
+}
+
 const Extension = () => {
   const { crm } = useExtensionContext<'crm.record.tab'>();
   const { addAlert } = useExtensionActions<'crm.record.tab'>();
   const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<QuoteResult | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const dealId = String(crm.objectId);
 
   const handleSendQuote = async () => {
     setIsLoading(true);
+    setErrorMsg(null);
 
     try {
       logger.info(`Sending deal ID ${dealId} to Fastify API`);
@@ -40,41 +64,51 @@ const Extension = () => {
       const data = await response.json();
       logger.info(`Fastify API response for deal ID ${data.dealId}`);
 
+      setResult({ url: data.pdf?.url, generatedAt: data.generatedAt });
       addAlert({
         type: 'success',
-        title: 'Cotización enviada',
-        message: `Deal ID enviado: ${data.dealId}`,
+        title: 'Cotización generada',
+        message: 'La cotización se generó correctamente.',
       });
     } catch (error) {
-      logger.error(error instanceof Error ? error.message : 'Unknown error');
-
-      addAlert({
-        type: 'danger',
-        title: 'Error',
-        message: 'No se pudo llamar al API de cotización.',
-      });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(message);
+      setErrorMsg(
+        /timeout|timed out/i.test(message)
+          ? 'La generación tardó demasiado. Vuelve a intentarlo.'
+          : 'No se pudo generar la cotización. Intenta de nuevo.',
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <EmptyState
-        title="Enviar cotización"
-        layout="vertical"
-        imageName="building"
+    <Flex direction="column" gap="medium">
+      <LoadingButton
+        variant="primary"
+        loading={isLoading}
+        onClick={handleSendQuote}
       >
-        <Text>Deal ID: {dealId}</Text>
+        Enviar cotización
+      </LoadingButton>
 
-        <LoadingButton
-          variant="primary"
-          loading={isLoading}
-          onClick={handleSendQuote}
-        >
-          Enviar cotización
-        </LoadingButton>
-      </EmptyState>
-    </>
+      {result?.url ? (
+        <Alert title="Cotización generada" variant="success">
+          <Flex direction="column" gap="small">
+            <Text>Generada el {formatGeneratedAt(result.generatedAt)}.</Text>
+            <Link href={{ url: result.url, external: true }}>
+              Abrir cotización (PDF)
+            </Link>
+          </Flex>
+        </Alert>
+      ) : null}
+
+      {errorMsg ? (
+        <Alert title="No se pudo generar" variant="danger">
+          {errorMsg}
+        </Alert>
+      ) : null}
+    </Flex>
   );
 };
