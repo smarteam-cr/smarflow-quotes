@@ -8,7 +8,7 @@
 
 ## 1. Contexto y objetivo
 
-`smarflow-quotes` (smartcoti) es una app privada de HubSpot para Construtecho
+`smarflow-quotes` (Smartquotes) es una app privada de HubSpot para Construtecho
 Centroamérica. Genera un PDF de cotización a partir de los datos de un Deal del
 CRM. La Fase 1 reprodujo el diseño visual objetivo (`proposal.html`) con datos
 de ejemplo hardcodeados. Esta fase reemplaza esos datos por información real
