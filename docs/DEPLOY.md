@@ -67,7 +67,9 @@ curl -s http://127.0.0.1:3003/health
 **Esperado:**
 - `docker compose ps` → estado `Up`.
 - logs → `Server listening at http://0.0.0.0:3000` (y `MONGO_URL is not set` es normal).
-- `curl /health` → `{"status":"ok","version":"0.1.0"}`.
+- `curl /health` → JSON con `status: "ok"`, `service`, `version`, `timestamp`,
+  `uptime` y `checks: { hubspot: true, r2: true }` (confirma que el token y R2 están
+  configurados).
 
 ### 2.6 (En el VPS) Probar la generación real (con un deal real)
 ```bash

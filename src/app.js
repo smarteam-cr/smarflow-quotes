@@ -43,7 +43,17 @@ export async function buildApp() {
 
   app.get('/health', async () => ({
     status: 'ok',
+    service: 'smartquotes-api',
     version: env.version,
+    timestamp: new Date().toISOString(),
+    uptime: Math.round(process.uptime()),
+    checks: {
+      // Presencia de configuración (no se llama a los servicios para no gastar rate-limit).
+      hubspot: Boolean(env.hubspotAccessToken),
+      r2: Boolean(
+        env.r2.endpoint && env.r2.bucketName && env.r2.accessKeyId,
+      ),
+    },
   }));
   await app.register(dealRoutes, { prefix: '/deals' });
 

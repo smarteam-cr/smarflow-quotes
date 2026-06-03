@@ -2,8 +2,8 @@
   "uid": "get_started_app",
   "type": "app",
   "config": {
-    "description": "A basic static token app for testing",
-    "name": "My Get Started app",
+    "description": "Genera cotizaciones en PDF a partir de negocios (deals) de HubSpot.",
+    "name": "Smartquotes",
     "distribution": "private",
     "auth": {
       "type": "static",
