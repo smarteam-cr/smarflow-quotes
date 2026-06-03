@@ -19,7 +19,7 @@ export const env = {
   hubspotAccessToken:
     process.env.HUBSPOT_ACCESS_TOKEN || process.env.HUBSPOT_PRIVATE_APP_TOKEN,
   mongoUrl: process.env.MONGO_URL,
-  mongoDbName: process.env.MONGO_DB_NAME ?? 'smartcoti',
+  mongoDbName: process.env.MONGO_DB_NAME ?? 'smartquotes',
   r2: {
     publicUrl:
       process.env.URL_PUBLIC_dEV ||
