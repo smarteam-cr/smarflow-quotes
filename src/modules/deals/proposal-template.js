@@ -32,6 +32,7 @@ export async function buildProposalHtml(viewModel) {
     .replaceAll('{{registryNumber}}', viewModel.numeroRegistro)
     .replaceAll('{{phones}}', viewModel.telefonos)
     .replaceAll('{{branch}}', viewModel.sucursal)
+    .replaceAll('{{siteTld}}', viewModel.siteTld)
     .replaceAll('{{paymentCondition}}', viewModel.condicionPago)
     .replaceAll('{{lineItemRows}}', buildCategoryRows(viewModel.categories))
     .replaceAll('{{subtotal}}', viewModel.subtotal)

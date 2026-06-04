@@ -21,6 +21,7 @@ const viewModel = {
   numeroRegistro: 'CSS KR18',
   telefonos: '37587673',
   sucursal: 'Guatemala',
+  siteTld: 'gt',
   condicionPago: 'Anticipo 60%<br>Estimaciones 40%',
   categories: [
     { nombre: 'Cubierta', items: [
@@ -54,4 +55,11 @@ test('renderiza con categories vacío sin error', async () => {
 test('la firma del medio usa el nombre del asesor (sin email)', async () => {
   const html = await buildProposalHtml(viewModel);
   assert.ok(html.includes('<p class="nombre">Jorge Arauz</p>'));
+});
+
+test('el URL del PDF usa el TLD de la sucursal', async () => {
+  const html = await buildProposalHtml({ ...viewModel, siteTld: 'hn' });
+  assert.ok(html.includes('href="https://construtecho.com.hn"'));
+  assert.ok(html.includes('www.construtecho.com.hn'));
+  assert.ok(!html.includes('construtecho.com.gt'));
 });

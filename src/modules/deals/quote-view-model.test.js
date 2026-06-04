@@ -140,3 +140,11 @@ test('despiece con solo espacios va a "Sin categoría"', () => {
   assert.equal(vm.categories.length, 1);
   assert.equal(vm.categories[0].nombre, 'Sin categoría');
 });
+
+test('siteTld se deriva de la sucursal (mapa único, default gt)', () => {
+  assert.equal(buildQuoteViewModel(baseRaw()).siteTld, 'gt'); // pipelineLabel 'Ventas Guatemala'
+  assert.equal(buildQuoteViewModel(baseRaw({ pipelineLabel: 'Ventas Honduras' })).siteTld, 'hn');
+  assert.equal(buildQuoteViewModel(baseRaw({ pipelineLabel: 'Ventas HONDURAS' })).siteTld, 'hn');
+  assert.equal(buildQuoteViewModel(baseRaw({ pipelineLabel: 'Ventas Panamá' })).siteTld, 'gt'); // no mapeado → default
+  assert.equal(buildQuoteViewModel(baseRaw({ pipelineLabel: '' })).siteTld, 'gt');
+});
