@@ -138,6 +138,21 @@ El repository y el service se validan con integración manual.
 
 ## 8. Pendientes / Backlog (por hacer)
 
+### En progreso — ajustes al PDF (spec aprobado 2026-06-04)
+Spec: `docs/superpowers/specs/2026-06-04-ajustes-pdf-tld-vigencia-contacto-design.md`.
+Tres cambios acotados a view model / plantilla / asociaciones, **sin llamadas nuevas a
+HubSpot** (solo backend; no requiere `hs project upload`):
+- **TLD por sucursal:** el URL del PDF cambia su TLD (`.gt`, `.hn`, …) según la sucursal,
+  vía un mapa único en `quote-view-model.js` (`SUCURSAL_TLD`); default `gt`.
+- **Vigencia literal:** `vigencia` deja de salir de `hs_expiration_date`; ahora es la
+  propiedad de deal `vigencia_en_dias` (número validado por regex en HubSpot) + " días"
+  (p. ej. `15 días`); vacío → vacío. Se deja de pedir `hs_expiration_date`.
+- **Contacto por defecto:** si el deal tiene un solo contacto se usa aunque no tenga
+  etiqueta `principal`; con varios se desambigua por `principal` (ninguno o más de uno
+  con `principal` → vacío). Conteo por id único.
+- **Prerrequisito HubSpot:** crear la propiedad de deal `vigencia_en_dias`.
+- `numero_de_registro` (Cambio 3 evaluado) **no se toca**: sigue manual en el deal.
+
 ### Pulido inmediato (ya en código, falta desplegar el card)
 - [ ] `git push origin main` + `hs project upload` para aplicar: limpieza de URLs de
   túnel del `permittedUrls`, slash final de la URL, y el nuevo nombre "Smartquotes".
