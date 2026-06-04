@@ -43,8 +43,60 @@ test('resolvePrimaryQuoteId devuelve la quote con type deal_to_primary_quote', (
   assert.equal(resolvePrimaryQuoteId({}), null);
 });
 
-test('resolvePrincipalContactId devuelve el contacto con type principal', () => {
+test('resolvePrincipalContactId: 2+ contactos usa el que tiene principal', () => {
   assert.equal(resolvePrincipalContactId(associations), '224543230295');
-  assert.equal(resolvePrincipalContactId({ contacts: { results: [{ id: 'y', type: 'deal_to_contact' }] } }), null);
+});
+
+test('resolvePrincipalContactId: sin contactos → null', () => {
   assert.equal(resolvePrincipalContactId({}), null);
+  assert.equal(resolvePrincipalContactId({ contacts: { results: [] } }), null);
+});
+
+test('resolvePrincipalContactId: un solo contacto sin etiqueta principal → ese contacto', () => {
+  assert.equal(
+    resolvePrincipalContactId({ contacts: { results: [{ id: 'y', type: 'deal_to_contact' }] } }),
+    'y',
+  );
+});
+
+test('resolvePrincipalContactId: un contacto con dos etiquetas (dos filas, mismo id) → ese contacto', () => {
+  assert.equal(
+    resolvePrincipalContactId({
+      contacts: {
+        results: [
+          { id: 'z', type: 'deal_to_contact' },
+          { id: 'z', type: 'principal' },
+        ],
+      },
+    }),
+    'z',
+  );
+});
+
+test('resolvePrincipalContactId: 2+ contactos, ninguno principal → null', () => {
+  assert.equal(
+    resolvePrincipalContactId({
+      contacts: {
+        results: [
+          { id: 'a', type: 'deal_to_contact' },
+          { id: 'b', type: 'deal_to_contact' },
+        ],
+      },
+    }),
+    null,
+  );
+});
+
+test('resolvePrincipalContactId: 2+ contactos, dos con principal → null (ambiguo)', () => {
+  assert.equal(
+    resolvePrincipalContactId({
+      contacts: {
+        results: [
+          { id: 'a', type: 'principal' },
+          { id: 'b', type: 'principal' },
+        ],
+      },
+    }),
+    null,
+  );
 });

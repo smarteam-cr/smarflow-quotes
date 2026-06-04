@@ -13,6 +13,14 @@ export function resolvePrimaryQuoteId(associations) {
 
 export function resolvePrincipalContactId(associations) {
   const results = associations?.contacts?.results ?? [];
-  const principal = results.find((r) => r.type === 'principal');
-  return principal?.id ?? null;
+  const uniqueIds = [...new Set(results.map((r) => r.id))];
+
+  if (uniqueIds.length === 0) return null;
+  if (uniqueIds.length === 1) return uniqueIds[0];
+
+  // 2+ contactos: usar el principal solo si hay exactamente uno con esa etiqueta.
+  const principalIds = [
+    ...new Set(results.filter((r) => r.type === 'principal').map((r) => r.id)),
+  ];
+  return principalIds.length === 1 ? principalIds[0] : null;
 }
