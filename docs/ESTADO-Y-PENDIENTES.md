@@ -34,7 +34,7 @@ branding interno es genérico ("Smartquotes"), no atado a un cliente.
 
 **Flujo interno (`POST /deals/send-quote`):**
 1. `getDeal` (endpoint `2026-03` vía `apiRequest`, trae propiedades + asociaciones con labels).
-2. Resolver quote principal (`deal_to_primary_quote`) y contacto principal (`principal`).
+2. Resolver quote principal (`deal_to_primary_quote`) y contacto (el único si hay uno solo; si hay varios, el `principal`).
 3. En paralelo: quote, contacto, empresa, line items, owner, pipeline label, timezone del portal.
 4. `buildQuoteViewModel` (función pura) → view model limpio y formateado.
 5. `buildProposalHtml` rellena `designs/proposal.html`.
@@ -94,15 +94,17 @@ El repository y el service se validan con integración manual.
 |-----------|--------|-----------|
 | Empresa / Dirección | Company | `name`, `address` |
 | # Proyecto, Obra, Lugar entrega, Tasa cambio, Garantía, # Registro, Condición de pago, Tiempos | Deal | `codigo_de_proyecto`, `obra`, `lugar_de_entrega`, `tasa_de_cambio`, `garantia`, `numero_de_registro`, `condicion_de_pago`, `tiempo_de_entrega_de_materiales`, `tiempo_de_ejecucion` |
-| Contacto / Teléfonos | Contacto **principal** | `firstname`+`lastname`, `phone` |
+| Contacto / Teléfonos | Contacto **principal** (o el único si hay uno solo) | `firstname`+`lastname`, `phone` |
 | Asesor | Owner (de `hubspot_owner_id`) | "Nombre Apellido (email)" |
 | Moneda | Deal | `deal_currency_code` (**código ISO tal cual**, ej. GTQ) |
 | Sucursal | Pipeline (label) | última palabra del label de `pipeline` |
-| Fecha / Vigencia | Quote **principal** | `hs_last_published_date` / `hs_expiration_date` (en TZ del portal) |
+| Fecha | Quote **principal** | `hs_last_published_date` (en TZ del portal) |
+| Vigencia | Deal | `vigencia_en_dias` (número) mostrado literal + " días" (ej. `15 días`) |
 | Cantidad/Nombre/Datos técnicos/Descripción/Precio | Line item | `quantity`, `name`, `datos_tecnicos`, `description`, `price` |
 | Categoría (agrupador) | Line item | `despiece` (valor interno, ya es texto legible) |
 | Total línea | Line item | `amount` |
 | Subtotal / IVA / Total general | Quote **principal** | `hs_tcv` / `hs_tax_total` / `hs_quote_amount` |
+| TLD del URL del PDF | Sucursal | mapa `SUCURSAL_TLD` en `quote-view-model.js` (default `gt`) |
 
 ---
 
@@ -115,7 +117,7 @@ El repository y el service se validan con integración manual.
 - **Quote/contacto principal por label de asociación** (`deal_to_primary_quote` /
   `principal`). Se usa el endpoint dado `2026-03` vía `apiRequest` porque es el
   verificado que devuelve esos labels.
-- **Sin contacto principal → vacío** (sin fallback a otro contacto). Decisión del negocio.
+- **Contacto: el principal, o el único si hay uno solo.** Con un solo contacto se usa aunque no tenga etiqueta `principal`; con varios, se desambigua por `principal`, y si ninguno (o más de uno) la tiene → vacío. (Antes era siempre por `principal`.)
 - **Sin quote principal → totales vacíos** (sin recálculo). Las cotizaciones son de pago único, así que `hs_tcv` = subtotal es válido.
 - **Item sin despiece → "Sin categoría"** al final.
 - **Última hoja (T&C) estática**, fluye después de los productos (no fuerza página nueva). Contenido fijo; CONSTRULOGIX, S.A. es intencional (razón social).
@@ -138,7 +140,7 @@ El repository y el service se validan con integración manual.
 
 ## 8. Pendientes / Backlog (por hacer)
 
-### En progreso — ajustes al PDF (spec aprobado 2026-06-04)
+### Aplicado — ajustes al PDF (2026-06-04)
 Spec: `docs/superpowers/specs/2026-06-04-ajustes-pdf-tld-vigencia-contacto-design.md`.
 Tres cambios acotados a view model / plantilla / asociaciones, **sin llamadas nuevas a
 HubSpot** (solo backend; no requiere `hs project upload`):
