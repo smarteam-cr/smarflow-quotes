@@ -7,6 +7,7 @@ const DEAL_PROPERTIES = [
   'deal_currency_code',
   'tasa_de_cambio',
   'garantia',
+  'vigencia_en_dias',
   'numero_de_registro',
   'condicion_de_pago',
   'hubspot_owner_id',
@@ -16,7 +17,6 @@ const QUOTE_PROPERTIES = [
   'hs_tcv',
   'hs_tax_total',
   'hs_quote_amount',
-  'hs_expiration_date',
   'hs_last_published_date',
 ];
 const CONTACT_PROPERTIES = ['firstname', 'lastname', 'email', 'phone'];

@@ -43,13 +43,14 @@ export function buildQuoteViewModel(raw) {
   const ct = contact?.properties ?? {};
   const qp = quote?.properties ?? {};
   const currencyCode = dp.deal_currency_code ?? '';
+  const vigenciaDias = String(dp.vigencia_en_dias ?? '').trim();
 
   return {
     empresa: escapeHtml(cp.name ?? ''),
     codigoProyecto: escapeHtml(dp.codigo_de_proyecto ?? ''),
     contacto: escapeHtml(buildContactName(ct)),
     direccionProyecto: escapeHtml(cp.address ?? ''),
-    vigencia: escapeHtml(formatDate(qp.hs_expiration_date, timeZone)),
+    vigencia: vigenciaDias ? escapeHtml(`${vigenciaDias} días`) : '',
     tiempoEntrega: escapeHtml(dp.tiempo_de_entrega_de_materiales ?? ''),
     tiempoEjecucion: escapeHtml(dp.tiempo_de_ejecucion ?? ''),
     asesor: escapeHtml(buildOwnerLabel(owner)),

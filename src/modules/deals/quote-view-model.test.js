@@ -14,6 +14,7 @@ function baseRaw(overrides = {}) {
         deal_currency_code: 'GTQ',
         tasa_de_cambio: 'N/A',
         garantia: '18 meses',
+        vigencia_en_dias: '15',
         numero_de_registro: 'CSS KR18',
         condicion_de_pago: 'Anticipo 60%\nEstimaciones 40%',
         hubspot_owner_id: '65432457',
@@ -27,7 +28,6 @@ function baseRaw(overrides = {}) {
         hs_tcv: '4693849.80',
         hs_tax_total: '563261.98',
         hs_quote_amount: '5257111.77',
-        hs_expiration_date: '2026-01-27T12:00:00.000Z',
         hs_last_published_date: '2026-01-27T12:00:00.000Z',
       },
     },
@@ -54,7 +54,7 @@ test('mapea campos de info', () => {
   assert.equal(vm.moneda, 'GTQ');
   assert.equal(vm.sucursal, 'Guatemala');
   assert.equal(vm.fecha, 'martes, enero 27, 2026');
-  assert.equal(vm.vigencia, 'martes, enero 27, 2026');
+  assert.equal(vm.vigencia, '15 días');
   assert.equal(vm.telefonos, '37587673');
 });
 
@@ -100,7 +100,7 @@ test('sin quote principal → totales vacíos', () => {
   assert.equal(vm.iva, '');
   assert.equal(vm.totalGeneral, '');
   assert.equal(vm.fecha, '');
-  assert.equal(vm.vigencia, '');
+  assert.equal(vm.vigencia, '15 días');
 });
 
 test('sin contacto → contacto y teléfono vacíos', () => {
@@ -147,4 +147,22 @@ test('siteTld se deriva de la sucursal (mapa único, default gt)', () => {
   assert.equal(buildQuoteViewModel(baseRaw({ pipelineLabel: 'Ventas HONDURAS' })).siteTld, 'hn');
   assert.equal(buildQuoteViewModel(baseRaw({ pipelineLabel: 'Ventas Panamá' })).siteTld, 'gt'); // no mapeado → default
   assert.equal(buildQuoteViewModel(baseRaw({ pipelineLabel: '' })).siteTld, 'gt');
+});
+
+test('vigencia = valor literal + " días"', () => {
+  const raw = baseRaw();
+  raw.deal.properties.vigencia_en_dias = '30';
+  assert.equal(buildQuoteViewModel(raw).vigencia, '30 días');
+});
+
+test('vigencia vacía si vigencia_en_dias está vacío', () => {
+  const raw = baseRaw();
+  raw.deal.properties.vigencia_en_dias = '';
+  assert.equal(buildQuoteViewModel(raw).vigencia, '');
+});
+
+test('vigencia vacía si vigencia_en_dias es solo espacios', () => {
+  const raw = baseRaw();
+  raw.deal.properties.vigencia_en_dias = '   ';
+  assert.equal(buildQuoteViewModel(raw).vigencia, '');
 });
