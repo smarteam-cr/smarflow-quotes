@@ -36,10 +36,11 @@ branding interno es genérico ("Smartquotes"), no atado a un cliente.
 1. `getDeal` (endpoint `2026-03` vía `apiRequest`, trae propiedades + asociaciones con labels).
 2. Resolver quote principal (`deal_to_primary_quote`) y contacto (el único si hay uno solo; si hay varios, el `principal`).
 3. En paralelo: quote, contacto, empresa, line items, owner, pipeline label, timezone del portal.
-4. `buildQuoteViewModel` (función pura) → view model limpio y formateado.
-5. `buildProposalHtml` rellena `designs/proposal.html`.
-6. Puppeteer (`networkidle0`) → PDF → R2 (`uploadPdf`).
-7. Guardar URL en `url_de_la_ultima_cotizacion` (best-effort, no bloquea).
+4. **Escribir `sistema` del negocio** (recalculado desde los line items, multi-checkbox unido por `;`) — **bloqueante**: si falla, no se genera el PDF.
+5. `buildQuoteViewModel` (función pura) → view model limpio y formateado.
+6. `buildProposalHtml` rellena `designs/proposal.html`.
+7. Puppeteer (`networkidle0`) → PDF → R2 (`uploadPdf`).
+8. Guardar URL en `url_de_la_ultima_cotizacion` (best-effort, no bloquea).
 
 **No usa base de datos.** (Mongo es opcional, solo para logging, y está desactivado.)
 
@@ -127,6 +128,12 @@ El repository y el service se validan con integración manual.
 - **Docker con Chromium del sistema (apt) + fuentes** (`fonts-liberation`, `fonts-noto-core`): apt resuelve las libs (incl. t64 de Debian 13) y las fuentes garantizan que el PDF se vea idéntico. `shm_size: 1gb` e `init: true` para que Chromium no crashee ni deje zombies.
 - **Escape de seguridad:** el view model entrega strings ya escapados; el template solo inserta. Multilínea (`\n`→`<br>`) en `condicion_de_pago`, `datos_tecnicos`, `description`.
 - **Card "Crear Cotización"** (antes "Enviar"): no se envía nada, se crea/genera.
+- **`sistema` del negocio se sincroniza desde los line items, bloqueante.** Al generar la
+  cotización se recalcula y **reemplaza** `sistema` del deal con los valores `sistema` de
+  los line items (ambas son checkbox múltiple; valores internos unidos por `;` sin `;`
+  inicial). Se escribe **antes** del PDF; si falla, no se genera el PDF y se alerta. *Por
+  qué:* alimenta métricas del negocio; un fallo silencioso las descuadraría. Precondición:
+  las opciones de `sistema` del negocio deben incluir las de productos.
 
 ---
 
@@ -140,6 +147,12 @@ El repository y el service se validan con integración manual.
 ---
 
 ## 8. Pendientes / Backlog (por hacer)
+
+### Aplicado — sincronización de `sistema` (Cambio 6, 2026-06-04)
+Spec/plan: `docs/superpowers/{specs,plans}/2026-06-04-cambio-6-sistema-sync*`.
+Al "Crear cotización" se reemplaza `sistema` del negocio desde los line items, **bloqueante**
+(si falla la escritura, no hay PDF). Toca backend y card (`hs project upload`). Precondición:
+opciones de `sistema` del negocio ⊇ las de productos. Scope `crm.objects.deals.write` ya estaba.
 
 ### Aplicado — ajustes al PDF (2026-06-04)
 Spec: `docs/superpowers/specs/2026-06-04-ajustes-pdf-tld-vigencia-contacto-design.md`.
