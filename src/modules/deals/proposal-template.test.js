@@ -22,6 +22,7 @@ const viewModel = {
   telefonos: '37587673',
   sucursal: 'Guatemala',
   siteTld: 'gt',
+  ivaPorcentaje: '12',
   condicionPago: 'Anticipo 60%<br>Estimaciones 40%',
   categories: [
     { nombre: 'Cubierta', items: [
@@ -62,4 +63,10 @@ test('el URL del PDF usa el TLD de la sucursal', async () => {
   assert.ok(html.includes('href="https://construtecho.com.hn"'));
   assert.ok(html.includes('www.construtecho.com.hn'));
   assert.ok(!html.includes('construtecho.com.gt'));
+});
+
+test('la etiqueta de IVA usa el porcentaje de la sucursal', async () => {
+  const html = await buildProposalHtml({ ...viewModel, ivaPorcentaje: '15' });
+  assert.ok(html.includes('IVA 15%'));
+  assert.ok(!html.includes('IVA 12%'));
 });
