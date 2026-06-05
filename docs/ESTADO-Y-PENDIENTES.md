@@ -93,7 +93,8 @@ El repository y el service se validan con integración manual.
 | Campo PDF | Origen | Propiedad |
 |-----------|--------|-----------|
 | Empresa / Dirección | Company | `name`, `address` |
-| # Proyecto, Obra, Lugar entrega, Tasa cambio, Garantía, # Registro, Condición de pago, Tiempos | Deal | `codigo_de_proyecto`, `obra`, `lugar_de_entrega`, `tasa_de_cambio`, `garantia`, `numero_de_registro`, `condicion_de_pago`, `tiempo_de_entrega_de_materiales`, `tiempo_de_ejecucion` |
+| # Proyecto | Quote **principal** | `hs_quote_number` (autogenerado por HubSpot al crear la cotización) |
+| Obra, Lugar entrega, Tasa cambio, Garantía, # Registro, Condición de pago, Tiempos | Deal | `obra`, `lugar_de_entrega`, `tasa_de_cambio`, `garantia`, `numero_de_registro`, `condicion_de_pago`, `tiempo_de_entrega_de_materiales`, `tiempo_de_ejecucion` |
 | Contacto / Teléfonos | Contacto **principal** (o el único si hay uno solo) | `firstname`+`lastname`, `phone` |
 | Asesor | Owner (de `hubspot_owner_id`) | "Nombre Apellido (email)" |
 | Moneda | Deal | `deal_currency_code` (**código ISO tal cual**, ej. GTQ) |
@@ -142,7 +143,7 @@ El repository y el service se validan con integración manual.
 
 ### Aplicado — ajustes al PDF (2026-06-04)
 Spec: `docs/superpowers/specs/2026-06-04-ajustes-pdf-tld-vigencia-contacto-design.md`.
-Tres cambios acotados a view model / plantilla / asociaciones, **sin llamadas nuevas a
+Cuatro cambios acotados a view model / plantilla / asociaciones, **sin llamadas nuevas a
 HubSpot** (solo backend; no requiere `hs project upload`):
 - **TLD por sucursal:** el URL del PDF cambia su TLD (`.gt`, `.hn`, …) según la sucursal,
   vía un mapa único en `quote-view-model.js` (`SUCURSAL_TLD`); default `gt`.
@@ -152,7 +153,11 @@ HubSpot** (solo backend; no requiere `hs project upload`):
 - **Contacto por defecto:** si el deal tiene un solo contacto se usa aunque no tenga
   etiqueta `principal`; con varios se desambigua por `principal` (ninguno o más de uno
   con `principal` → vacío). Conteo por id único.
-- **Prerrequisito HubSpot:** crear la propiedad de deal `vigencia_en_dias`.
+- **# Proyecto desde la cotización:** `# Proyecto` deja de salir de `codigo_de_proyecto`
+  (deal); ahora es `hs_quote_number` (cotización, autogenerado por HubSpot). Vacío si no
+  hay cotización principal. Se deja de pedir `codigo_de_proyecto`.
+- **Prerrequisito HubSpot:** crear la propiedad de deal `vigencia_en_dias`. (`hs_quote_number`
+  no requiere nada: HubSpot lo llena solo al crear la cotización.)
 - `numero_de_registro` (Cambio 3 evaluado) **no se toca**: sigue manual en el deal.
 
 ### Pulido inmediato (ya en código, falta desplegar el card)
