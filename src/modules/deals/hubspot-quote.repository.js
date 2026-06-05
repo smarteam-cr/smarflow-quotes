@@ -29,6 +29,7 @@ const LINE_ITEM_PROPERTIES = [
   'price',
   'amount',
   'despiece',
+  'sistema',
 ];
 const DEFAULT_TIME_ZONE = 'America/Guatemala';
 
@@ -131,6 +132,14 @@ export function createHubspotQuoteRepository({ hubspotClient, logger }) {
     }
   }
 
+  async function updateDealSistema(dealId, value) {
+    // Intencional: sin try/catch. Los errores propagan para que el service pueda
+    // abortar la cotización (a diferencia de saveQuoteUrl, que es best-effort).
+    await hubspotClient.crm.deals.basicApi.update(dealId, {
+      properties: { sistema: value },
+    });
+  }
+
   return {
     getDeal,
     getQuote,
@@ -141,5 +150,6 @@ export function createHubspotQuoteRepository({ hubspotClient, logger }) {
     getPipelineLabel,
     getPortalTimeZone,
     saveQuoteUrl,
+    updateDealSistema,
   };
 }
