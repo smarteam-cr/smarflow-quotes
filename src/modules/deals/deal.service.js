@@ -9,6 +9,7 @@ import {
   resolvePrimaryQuoteId,
   resolvePrincipalContactId,
 } from './hubspot-associations.js';
+import { computeSistemaValue } from './deal-sistema.js';
 
 const DEFAULT_TIME_ZONE = 'America/Guatemala';
 
@@ -61,6 +62,22 @@ export function createDealService({ hubspotAccessToken, logger, storage }) {
           : '',
         repo.getPortalTimeZone().catch(() => DEFAULT_TIME_ZONE),
       ]);
+
+    // Recalcular y reemplazar `sistema` del negocio según los line items actuales.
+    // Bloqueante a propósito: si falla, NO se genera el PDF (integridad del dato).
+    const sistemaValue = computeSistemaValue(lineItems);
+    try {
+      await repo.updateDealSistema(dealId, sistemaValue);
+    } catch (err) {
+      logger.error(
+        { dealId, err: err.message },
+        'No se pudo actualizar sistema del negocio',
+      );
+      throw serverError(
+        'No se pudo actualizar la propiedad "sistema" del negocio en HubSpot; no se generó la cotización. ' +
+          'Verifica que las opciones de "sistema" del negocio incluyan las de los productos e inténtalo de nuevo.',
+      );
+    }
 
     const viewModel = buildQuoteViewModel({
       deal,
