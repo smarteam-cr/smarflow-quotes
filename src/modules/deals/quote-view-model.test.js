@@ -150,6 +150,12 @@ test('siteTld se deriva de la sucursal (mapa único, default gt)', () => {
   assert.equal(buildQuoteViewModel(baseRaw({ pipelineLabel: '' })).siteTld, 'gt');
 });
 
+test('ivaPorcentaje según la sucursal (default 12)', () => {
+  assert.equal(buildQuoteViewModel(baseRaw()).ivaPorcentaje, '12'); // Guatemala
+  assert.equal(buildQuoteViewModel(baseRaw({ pipelineLabel: 'Ventas Honduras' })).ivaPorcentaje, '15');
+  assert.equal(buildQuoteViewModel(baseRaw({ pipelineLabel: 'Ventas Panamá' })).ivaPorcentaje, '12'); // no mapeado → default
+});
+
 test('vigencia = valor literal + " días"', () => {
   const raw = baseRaw();
   raw.deal.properties.vigencia_en_dias = '30';

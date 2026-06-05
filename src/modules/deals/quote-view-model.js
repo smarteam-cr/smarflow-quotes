@@ -5,26 +5,9 @@ import {
   formatMoney,
   formatDate,
 } from './format.util.js';
+import { sucursalConfig } from './sucursal-config.js';
 
 const SIN_CATEGORIA = 'Sin categoría';
-
-const SUCURSAL_TLD = {
-  guatemala: 'gt',
-  honduras: 'hn',
-};
-const DEFAULT_TLD = 'gt';
-
-function normalizeKey(value) {
-  return String(value ?? '')
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .trim()
-    .toLowerCase();
-}
-
-function tldForSucursal(sucursal) {
-  return SUCURSAL_TLD[normalizeKey(sucursal)] ?? DEFAULT_TLD;
-}
 
 export function buildQuoteViewModel(raw) {
   const {
@@ -44,6 +27,7 @@ export function buildQuoteViewModel(raw) {
   const qp = quote?.properties ?? {};
   const currencyCode = dp.deal_currency_code ?? '';
   const vigenciaDias = String(dp.vigencia_en_dias ?? '').trim();
+  const sucursalCfg = sucursalConfig(pipelineLabel);
 
   return {
     empresa: escapeHtml(cp.name ?? ''),
@@ -63,8 +47,9 @@ export function buildQuoteViewModel(raw) {
     fecha: escapeHtml(formatDate(qp.hs_last_published_date, timeZone)),
     numeroRegistro: escapeHtml(dp.numero_de_registro ?? ''),
     telefonos: escapeHtml(ct.phone ?? ''),
-    sucursal: escapeHtml(lastWord(pipelineLabel)),
-    siteTld: tldForSucursal(lastWord(pipelineLabel)),
+    sucursal: escapeHtml(sucursalCfg.nombre),
+    siteTld: sucursalCfg.tld,
+    ivaPorcentaje: sucursalCfg.ivaPct,
     condicionPago: multilineToHtml(dp.condicion_de_pago ?? ''),
     categories: buildCategories(lineItems, currencyCode),
     subtotal: quote ? escapeHtml(formatMoney(qp.hs_tcv, currencyCode)) : '',
@@ -90,12 +75,6 @@ function buildOwnerLabel(owner) {
   if (name) return name;
   if (email) return `(${email})`;
   return '';
-}
-
-function lastWord(label) {
-  const cleaned = String(label ?? '').trim();
-  if (!cleaned) return '';
-  return cleaned.split(/\s+/).pop();
 }
 
 function buildCategories(lineItems, currencyCode) {
