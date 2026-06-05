@@ -71,6 +71,17 @@ test('deduplica preservando orden y une con ; sin espacios', () => {
   );
 });
 
+test('un line item puede traer varios valores (se separan por ;)', () => {
+  assert.equal(
+    computeSistemaValue([li('caso1;caso2'), li('caso2;caso3')]),
+    'caso1;caso2;caso3',
+  );
+});
+
+test('tolera ; sobrantes y espacios dentro del valor del line item', () => {
+  assert.equal(computeSistemaValue([li(';caso1;;caso2; ')]), 'caso1;caso2');
+});
+
 test('recalcula con otro conjunto de line items', () => {
   assert.equal(computeSistemaValue([li('caso2'), li('caso3')]), 'caso2;caso3');
 });
@@ -93,20 +104,24 @@ Crear `src/modules/deals/deal-sistema.js`:
 
 ```js
 /**
- * Calcula el valor de la propiedad multi-checkbox `sistema` del negocio a partir
- * de los line items. Toma el `sistema` (desplegable, 1 valor por line item) de cada
- * uno, descarta vacíos, deduplica preservando orden de aparición y los une con ';'
- * (formato interno de selección múltiple de HubSpot; SIN ';' inicial → reemplaza).
+ * Calcula el valor de la propiedad multi-checkbox `sistema` del negocio a partir de los
+ * line items. Ambas propiedades (`sistema` de negocio y de productos) son de selección
+ * múltiple, así que el `sistema` de CADA line item ya puede traer varios valores internos
+ * separados por ';'. Se separan, se descartan vacíos, se deduplican preservando orden de
+ * aparición y se unen con ';' (formato interno de HubSpot; SIN ';' inicial → reemplaza).
  * Devuelve '' si no hay valores (al escribirse, limpia el campo del negocio).
  */
 export function computeSistemaValue(lineItems) {
   const seen = new Set();
   const values = [];
   for (const lineItem of lineItems ?? []) {
-    const raw = String(lineItem?.properties?.sistema ?? '').trim();
-    if (raw === '' || seen.has(raw)) continue;
-    seen.add(raw);
-    values.push(raw);
+    const raw = String(lineItem?.properties?.sistema ?? '');
+    for (const token of raw.split(';')) {
+      const value = token.trim();
+      if (value === '' || seen.has(value)) continue;
+      seen.add(value);
+      values.push(value);
+    }
   }
   return values.join(';');
 }

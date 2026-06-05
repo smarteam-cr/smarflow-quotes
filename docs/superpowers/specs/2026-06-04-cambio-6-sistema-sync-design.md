@@ -10,9 +10,10 @@
 ## 1. Contexto
 
 El negocio (deal) tiene una propiedad `sistema` de tipo **selección múltiple (checkbox
-múltiple)**. Los productos (line items) tienen una propiedad `sistema` de tipo
-**desplegable de selección única**. Los **valores internos** de las opciones coinciden
-en ambas (`caso1`, `caso2`, `caso3`, …).
+múltiple)**. Los productos (line items) tienen una propiedad `sistema` que **también es
+de tipo selección múltiple (checkbox)** — es decir, un line item puede traer **varios
+valores** a la vez. Los **valores internos** de las opciones coinciden en ambas
+(`caso1`, `caso2`, `caso3`, …).
 
 Se requiere que, al **generar la cotización** ("Crear cotización"), el `sistema` del
 negocio se **recalcule y reemplace** con el conjunto de valores `sistema` que traen los
@@ -21,6 +22,8 @@ line items asociados en ese momento.
 Ejemplo:
 - Line items con `caso1`, `caso1`, `caso3` → negocio `sistema = caso1;caso3`.
 - Si luego cambian a `caso2`, `caso3` → negocio `sistema = caso2;caso3`.
+- Como cada line item puede traer varios: Line item A `caso1;caso2` + Line item B
+  `caso2;caso3` → negocio `sistema = caso1;caso2;caso3` (unión deduplicada).
 
 No es "agregar": es **recalcular y reemplazar** el valor completo según los line items
 actuales.
@@ -77,24 +80,30 @@ separados por `;` sin espacios**: `"caso1;caso3"`.
 
 ### 3.3 Función pura `computeSistemaValue(lineItems)`
 
-Nuevo módulo puro `src/modules/deals/deal-sistema.js`:
+Nuevo módulo puro `src/modules/deals/deal-sistema.js`. Como el `sistema` del line item
+**también es checkbox múltiple**, su valor ya viene como cadena `;`-separada (`"caso1;caso2"`),
+así que hay que **separar por `;` el valor de cada line item** antes de juntar:
 
 ```js
 /**
- * Calcula el valor de la propiedad multi-checkbox `sistema` del negocio a partir
- * de los line items. Toma el `sistema` (desplegable, 1 valor por line item) de cada
- * uno, descarta vacíos, deduplica preservando orden de aparición y los une con ';'
- * (formato interno de selección múltiple de HubSpot; SIN ';' inicial → reemplaza).
+ * Calcula el valor de la propiedad multi-checkbox `sistema` del negocio a partir de los
+ * line items. Ambas propiedades (`sistema` de negocio y de productos) son de selección
+ * múltiple, así que el `sistema` de CADA line item ya puede traer varios valores internos
+ * separados por ';'. Se separan, se descartan vacíos, se deduplican preservando orden de
+ * aparición y se unen con ';' (formato interno de HubSpot; SIN ';' inicial → reemplaza).
  * Devuelve '' si no hay valores (al escribirse, limpia el campo del negocio).
  */
 export function computeSistemaValue(lineItems) {
   const seen = new Set();
   const values = [];
   for (const lineItem of lineItems ?? []) {
-    const raw = String(lineItem?.properties?.sistema ?? '').trim();
-    if (raw === '' || seen.has(raw)) continue;
-    seen.add(raw);
-    values.push(raw);
+    const raw = String(lineItem?.properties?.sistema ?? '');
+    for (const token of raw.split(';')) {
+      const value = token.trim();
+      if (value === '' || seen.has(value)) continue;
+      seen.add(value);
+      values.push(value);
+    }
   }
   return values.join(';');
 }
@@ -159,8 +168,10 @@ timeout / fallos de transporte. **Esto toca el frontend → requiere `hs project
 | Caso | Comportamiento |
 |------|----------------|
 | Sin line items / ninguno con `sistema` | `computeSistemaValue` → `''` → se escribe `''` → **limpia** el `sistema` del negocio (decisión propuesta, ver §6). La escritura de `''` debe tener éxito. |
+| Line item con varios valores (`caso1;caso2`) | Se separa por `;` y cada valor entra al conjunto. |
 | Line item con `sistema` vacío | Se ignora (no aporta). |
-| Valores repetidos | Se deduplican, preservando orden de aparición. |
+| `;` sobrantes o espacios (`;caso1;;caso2; `) | Se toleran: se separa, se hace `trim` y se descartan vacíos. |
+| Valores repetidos (en el mismo line item o entre varios) | Se deduplican, preservando orden de aparición. |
 | Valor de line item que **no existe** en las opciones del `sistema` del negocio | HubSpot rechaza el PATCH (400) → por ser **bloqueante**, **no se genera el PDF** y se muestra el error. Es el fallo "ruidoso" deseado: señala desalineación de opciones. |
 
 ---
@@ -216,7 +227,8 @@ timeout / fallos de transporte. **Esto toca el frontend → requiere `hs project
 
 - **Unitarias (función pura `computeSistemaValue`):** lista vacía → `''`; sin `sistema`
   → `''`; `[caso1, caso1, caso3]` → `'caso1;caso3'`; `[caso2, caso3]` → `'caso2;caso3'`;
-  dedup preserva orden; ignora vacíos/espacios; **nunca** genera `;` inicial.
+  **line item con varios valores** (`[caso1;caso2, caso2;caso3]` → `'caso1;caso2;caso3'`);
+  `;` sobrantes/espacios tolerados; dedup preserva orden; **nunca** genera `;` inicial.
 - **Integración manual (escritura/orden):** el repository y el service se validan
   manualmente (como el resto de I/O del proyecto). Verificación end-to-end en un deal de
   prueba: (a) genera cotización → el `sistema` del negocio refleja los line items; (b)
