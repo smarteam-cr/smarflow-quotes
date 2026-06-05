@@ -99,14 +99,15 @@ El repository y el service se validan con integración manual.
 | Contacto / Teléfonos | Contacto **principal** (o el único si hay uno solo) | `firstname`+`lastname`, `phone` |
 | Asesor | Owner (de `hubspot_owner_id`) | "Nombre Apellido (email)" |
 | Moneda | Deal | `deal_currency_code` (**código ISO tal cual**, ej. GTQ) |
-| Sucursal | Pipeline (label) | última palabra del label de `pipeline` |
+| Sucursal (nombre) | Pipeline (label) | `sucursal-config.js` (match porque el label *termina con* el país; default = última palabra del label) |
 | Fecha | Quote **principal** | `hs_last_published_date` (en TZ del portal) |
 | Vigencia | Deal | `vigencia_en_dias` (número) mostrado literal + " días" (ej. `15 días`) |
 | Cantidad/Nombre/Datos técnicos/Descripción/Precio | Line item | `quantity`, `name`, `datos_tecnicos`, `description`, `price` |
 | Categoría (agrupador) | Line item | `despiece` (valor interno, ya es texto legible) |
 | Total línea | Line item | `amount` |
 | Subtotal / IVA / Total general | Quote **principal** | `hs_tcv` / `hs_tax_total` / `hs_quote_amount` |
-| TLD del URL del PDF | Sucursal | mapa `SUCURSAL_TLD` en `quote-view-model.js` (default `gt`) |
+| TLD del URL del PDF | Sucursal | `sucursal-config.js` (Guatemala `gt`, Honduras `hn`; default `gt`) |
+| Etiqueta IVA `N%` | Sucursal | `sucursal-config.js` (Guatemala `12`, Honduras `15`). El **monto** del IVA sigue de `hs_tax_total` |
 
 ---
 
@@ -134,6 +135,12 @@ El repository y el service se validan con integración manual.
   inicial). Se escribe **antes** del PDF; si falla, no se genera el PDF y se alerta. *Por
   qué:* alimenta métricas del negocio; un fallo silencioso las descuadraría. Precondición:
   las opciones de `sistema` del negocio deben incluir las de productos.
+- **Config por sucursal en un solo archivo (`sucursal-config.js`).** Todo lo que depende de
+  la sede (nombre mostrado, TLD del URL, % de IVA) vive en `SUCURSALES`. Agregar una sede o
+  cambiar un dato = editar **solo** ese archivo. El match es por *fin del label* del pipeline
+  (no por "última palabra"), así una sede de dos palabras ("Costa Rica") no tiene el bug de
+  mostrar solo "Rica". *Nota:* `ivaPct` es solo la **etiqueta** del % en el PDF; el **monto**
+  del IVA lo calcula HubSpot (`hs_tax_total`), hay que mantenerlos coherentes por sede.
 
 ---
 
