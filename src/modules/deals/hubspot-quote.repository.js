@@ -1,5 +1,4 @@
 const DEAL_PROPERTIES = [
-  'codigo_de_proyecto',
   'tiempo_de_entrega_de_materiales',
   'tiempo_de_ejecucion',
   'obra',
@@ -14,6 +13,7 @@ const DEAL_PROPERTIES = [
   'pipeline',
 ];
 const QUOTE_PROPERTIES = [
+  'hs_quote_number',
   'hs_tcv',
   'hs_tax_total',
   'hs_quote_amount',

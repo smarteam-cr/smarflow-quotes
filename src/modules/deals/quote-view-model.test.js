@@ -6,7 +6,6 @@ function baseRaw(overrides = {}) {
   return {
     deal: {
       properties: {
-        codigo_de_proyecto: 'Mw_19012026',
         tiempo_de_entrega_de_materiales: 'LAMINA - stock 50%',
         tiempo_de_ejecucion: 'Según obra',
         obra: 'MABE',
@@ -25,6 +24,7 @@ function baseRaw(overrides = {}) {
     contact: { properties: { firstname: 'Karla', lastname: 'Sierra', email: 'k@x.com', phone: '37587673' } },
     quote: {
       properties: {
+        hs_quote_number: '1042',
         hs_tcv: '4693849.80',
         hs_tax_total: '563261.98',
         hs_quote_amount: '5257111.77',
@@ -46,7 +46,7 @@ function baseRaw(overrides = {}) {
 test('mapea campos de info', () => {
   const vm = buildQuoteViewModel(baseRaw());
   assert.equal(vm.empresa, 'Spectrum');
-  assert.equal(vm.codigoProyecto, 'Mw_19012026');
+  assert.equal(vm.codigoProyecto, '1042');
   assert.equal(vm.contacto, 'Karla Sierra');
   assert.equal(vm.direccionProyecto, 'Escuintla');
   assert.equal(vm.asesor, 'Jorge Arauz (jarauz@x.com)');
@@ -100,6 +100,7 @@ test('sin quote principal → totales vacíos', () => {
   assert.equal(vm.iva, '');
   assert.equal(vm.totalGeneral, '');
   assert.equal(vm.fecha, '');
+  assert.equal(vm.codigoProyecto, '');
   assert.equal(vm.vigencia, '15 días');
 });
 

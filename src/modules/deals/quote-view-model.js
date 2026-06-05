@@ -47,7 +47,7 @@ export function buildQuoteViewModel(raw) {
 
   return {
     empresa: escapeHtml(cp.name ?? ''),
-    codigoProyecto: escapeHtml(dp.codigo_de_proyecto ?? ''),
+    codigoProyecto: escapeHtml(qp.hs_quote_number ?? ''),
     contacto: escapeHtml(buildContactName(ct)),
     direccionProyecto: escapeHtml(cp.address ?? ''),
     vigencia: vigenciaDias ? escapeHtml(`${vigenciaDias} días`) : '',
