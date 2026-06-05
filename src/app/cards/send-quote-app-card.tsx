@@ -15,6 +15,21 @@ hubspot.extend<'crm.record.tab'>(() => <Extension />);
 
 const API_BASE_URL = 'https://smartquotes.smarteamcr.com';
 
+// Distingue un error de aplicación del backend (mensaje en español para el operador)
+// de un fallo de transporte/HTTP, sin depender de coincidencias de texto frágiles.
+class BackendAppError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'BackendAppError';
+  }
+}
+class BackendHttpError extends Error {
+  constructor(status: number) {
+    super(`Fastify API responded with ${status}`);
+    this.name = 'BackendHttpError';
+  }
+}
+
 interface QuoteResult {
   url: string;
   generatedAt: string;
@@ -56,7 +71,17 @@ const Extension = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Fastify API responded with ${response.status}`);
+        let serverMessage = '';
+        try {
+          const errBody = await response.json();
+          serverMessage = typeof errBody?.message === 'string' ? errBody.message : '';
+        } catch {
+          serverMessage = '';
+        }
+        if (serverMessage) {
+          throw new BackendAppError(serverMessage);
+        }
+        throw new BackendHttpError(response.status);
       }
 
       const data = await response.json();
@@ -71,11 +96,14 @@ const Extension = () => {
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       logger.error(message);
-      setErrorMsg(
-        /timeout|timed out/i.test(message)
-          ? 'La generación tardó demasiado. Vuelve a intentarlo.'
-          : 'No se pudo generar la cotización. Intenta de nuevo.',
-      );
+      if (error instanceof BackendAppError) {
+        // Mensaje específico del backend (p. ej. falla al actualizar "sistema").
+        setErrorMsg(message);
+      } else if (/timeout|timed out/i.test(message)) {
+        setErrorMsg('La generación tardó demasiado. Vuelve a intentarlo.');
+      } else {
+        setErrorMsg('No se pudo generar la cotización. Intenta de nuevo.');
+      }
     } finally {
       setIsLoading(false);
     }
