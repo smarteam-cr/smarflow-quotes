@@ -2,7 +2,7 @@
 
 > **Documento de handoff.** Si retomas el proyecto en una sesión nueva, lee esto
 > primero: resume QUÉ es, QUÉ se hizo, POR QUÉ, cómo está en producción y QUÉ falta.
-> Última actualización: 2026-06-03.
+> Última actualización: 2026-06-10.
 
 ---
 
@@ -39,7 +39,10 @@ branding interno es genérico ("Smartquotes"), no atado a un cliente.
 4. **Escribir `sistema` del negocio** (recalculado desde los line items, multi-checkbox unido por `;`) — **bloqueante**: si falla, no se genera el PDF.
 5. `buildQuoteViewModel` (función pura) → view model limpio y formateado.
 6. `buildProposalHtml` rellena `designs/proposal.html`.
-7. Puppeteer (`networkidle0`) → PDF → R2 (`uploadPdf`).
+7. Puppeteer (`networkidle0`) → PDF → R2 (`uploadPdf`). El render está **limitado por un
+   semáforo** (`PDF_MAX_CONCURRENCY`, default 2): bajo una ráfaga de clics los renders se
+   **encolan** en vez de apilar Chromiums y agotar la memoria del contenedor. La key del PDF
+   en R2 lleva entropía (`pdf-key.js`) para que dos generaciones del mismo deal no colisionen.
 8. Guardar URL en `url_de_la_ultima_cotizacion` (best-effort, no bloquea).
 
 **No usa base de datos.** (Mongo es opcional, solo para logging, y está desactivado.)
@@ -57,7 +60,8 @@ branding interno es genérico ("Smartquotes"), no atado a un cliente.
 | Almacenamiento | Cloudflare R2, bucket `hs-quotes-construtecho` (del cliente, lo administramos nosotros) |
 | Rama desplegada | `main` |
 | Card URL (`API_BASE_URL`) | `https://smartquotes.smarteamcr.com` (en `send-quote-app-card.tsx` y `permittedUrls.fetch`) |
-| Healthcheck | `GET /health` → status, service, version, timestamp, uptime, checks (hubspot/r2) |
+| Healthcheck | `GET /health` → status, service, version, timestamp, uptime, checks (hubspot/r2). El `docker-compose.yml` lo sondea cada 5 min (marca healthy/unhealthy; es diagnóstico, no auto-reinicia) |
+| Concurrencia de PDF | `PDF_MAX_CONCURRENCY` (default 2): renders simultáneos máximos; los demás se encolan |
 
 **Operación:** `docker compose logs -f`, `docker compose restart`, actualizar con
 `git pull && docker compose up -d --build`. Detalle en `docs/DEPLOY.md`.
@@ -77,14 +81,18 @@ branding interno es genérico ("Smartquotes"), no atado a un cliente.
 | `src/modules/deals/quote-view-model.js` | Función **pura**: datos crudos HubSpot → view model |
 | `src/modules/deals/proposal-template.js` | Rellena el HTML con el view model (no transforma) |
 | `src/modules/deals/format.util.js` | Funciones puras: escape, multilínea, número, moneda, fecha |
+| `src/modules/deals/sucursal-config.js` | **Fuente única** por sede: nombre, TLD del URL y % de IVA (etiqueta) |
+| `src/modules/deals/pdf-key.js` | Key única del PDF en R2 (dealId + timestamp + entropía) |
 | `src/modules/deals/designs/proposal.html` | Plantilla del PDF (header, info, productos, **última hoja T&C estática**) |
+| `src/utils/concurrency-limit.js` | Semáforo de concurrencia para el render de PDF (`PDF_MAX_CONCURRENCY`) |
 | `src/plugins/{r2,mongo,logger}.plugin.js` | R2 (subir PDF), Mongo (opc.), logging |
 
 **Frontend (card):** `src/app/cards/send-quote-app-card.tsx` + `send-quote-hsmeta.json`.
 **App HubSpot:** `src/app/app-hsmeta.json` (scopes, `permittedUrls`, nombre "Smartquotes").
 
-**Tests:** `*.test.js` con `node:test` (`npm test`). **27 tests** sobre las
-funciones puras (format.util, hubspot-associations, quote-view-model, proposal-template).
+**Tests:** `*.test.js` con `node:test` (`npm test`). **61 tests** en 11 archivos sobre las
+funciones puras y utilidades (format.util, hubspot-associations, quote-view-model,
+proposal-template, sucursal-config, deal-sistema, pdf-key, concurrency-limit).
 El repository y el service se validan con integración manual.
 
 ---
@@ -141,6 +149,11 @@ El repository y el service se validan con integración manual.
   (no por "última palabra"), así una sede de dos palabras ("Costa Rica") no tiene el bug de
   mostrar solo "Rica". *Nota:* `ivaPct` es solo la **etiqueta** del % en el PDF; el **monto**
   del IVA lo calcula HubSpot (`hs_tax_total`), hay que mantenerlos coherentes por sede.
+- **Límite de concurrencia del render, no réplicas.** Cada cotización abre un Chromium; sin tope, una
+  ráfaga podía agotar la memoria del contenedor (OOM). Se acota con un **semáforo en proceso**
+  (`PDF_MAX_CONCURRENCY`, default 2) que encola los renders extra. *Por qué así:* con un solo proceso/
+  contenedor, un semáforo en memoria resuelve el problema sin Redis/colas externas/réplicas (sería
+  sobreingeniería para el volumen actual). Análisis completo en la memoria del proyecto del asistente.
 
 ---
 
@@ -154,6 +167,17 @@ El repository y el service se validan con integración manual.
 ---
 
 ## 8. Pendientes / Backlog (por hacer)
+
+### Aplicado — endurecimiento de concurrencia (2026-06-10)
+Tres cambios de bajo riesgo para soportar mejor clics simultáneos de varios asesores, **solo backend**
+(requiere `docker compose up -d --build`, no `hs project upload`):
+- **Semáforo de render** (`src/utils/concurrency-limit.js`): tope de Chromium en paralelo
+  (`PDF_MAX_CONCURRENCY`, default 2); los renders extra se encolan en vez de provocar OOM.
+- **Key de R2 con entropía** (`src/modules/deals/pdf-key.js`): evita colisión de dos PDFs del mismo deal.
+- **Healthcheck** en `docker-compose.yml` (sonda `/health` cada 5 min; diagnóstico, no auto-reinicia).
+
+Pendiente solo el despliegue al VPS (`git pull && docker compose up -d --build`). Sin cambios de scopes ni
+de la card.
 
 ### Aplicado — sincronización de `sistema` (Cambio 6, 2026-06-04)
 Spec/plan: `docs/superpowers/{specs,plans}/2026-06-04-cambio-6-sistema-sync*`.
@@ -180,10 +204,9 @@ HubSpot** (solo backend; no requiere `hs project upload`):
   no requiere nada: HubSpot lo llena solo al crear la cotización.)
 - `numero_de_registro` (Cambio 3 evaluado) **no se toca**: sigue manual en el deal.
 
-### Pulido inmediato (ya en código, falta desplegar el card)
-- [ ] `git push origin main` + `hs project upload` para aplicar: limpieza de URLs de
-  túnel del `permittedUrls`, slash final de la URL, y el nuevo nombre "Smartquotes".
-  (Ya commiteado en `main`; el backend del VPS no necesita rebuild por esto.)
+### Aplicado — limpieza del card
+- [x] `permittedUrls.fetch` ya sin URLs de túnel (solo `api.hubapi.com` y
+  `smartquotes.smarteamcr.com`) y la app con el nombre "Smartquotes" (ver `src/app/app-hsmeta.json`).
 
 ### B1 — Persistir el estado del card al recargar *(frontend, sin backend)*
 Al montar el card, leer `url_de_la_ultima_cotizacion` con el hook `useCrmProperties`
