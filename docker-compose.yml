@@ -19,3 +19,16 @@ services:
     # /dev/shm grande para que Chromium no crashee al renderizar.
     shm_size: "1gb"
     mem_limit: "1500m"
+    # Sondea el endpoint /health que ya expone la app. Marca el contenedor como
+    # healthy/unhealthy (visible en `docker compose ps`); es solo diagnóstico, no
+    # auto-reinicia. Usa el fetch nativo de Node 24 para no instalar curl/wget.
+    healthcheck:
+      test:
+        - "CMD"
+        - "node"
+        - "-e"
+        - "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 5m
+      timeout: 5s
+      retries: 3
+      start_period: 15s

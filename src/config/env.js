@@ -20,6 +20,9 @@ export const env = {
     process.env.HUBSPOT_ACCESS_TOKEN || process.env.HUBSPOT_PRIVATE_APP_TOKEN,
   mongoUrl: process.env.MONGO_URL,
   mongoDbName: process.env.MONGO_DB_NAME ?? 'smartquotes',
+  // Máximo de renders de PDF (Chromium) en paralelo. Las cotizaciones extra se encolan.
+  // Tunable en producción sin recompilar; 2 deja amplio margen bajo mem_limit 1500m.
+  pdfMaxConcurrency: Number(process.env.PDF_MAX_CONCURRENCY ?? 2),
   r2: {
     publicUrl:
       process.env.URL_PUBLIC_dEV ||

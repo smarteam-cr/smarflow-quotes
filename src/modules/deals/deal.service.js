@@ -10,10 +10,15 @@ import {
   resolvePrincipalContactId,
 } from './hubspot-associations.js';
 import { computeSistemaValue } from './deal-sistema.js';
+import { createConcurrencyLimit } from '../../utils/concurrency-limit.js';
+import { buildPdfKey } from './pdf-key.js';
 
 const DEFAULT_TIME_ZONE = 'America/Guatemala';
 
-export function createDealService({ hubspotAccessToken, logger, storage }) {
+export function createDealService({ hubspotAccessToken, logger, storage, pdfConcurrency = 2 }) {
+  // Singleton por proceso (createDealService se llama una vez al registrar la ruta):
+  // un único limitador compartido por TODAS las requests acota los renders en paralelo.
+  const renderLimit = createConcurrencyLimit(pdfConcurrency);
   const hubspotClient = hubspotAccessToken
     ? new Client({ accessToken: hubspotAccessToken, numberOfApiCallRetries: 3 })
     : null;
@@ -91,7 +96,9 @@ export function createDealService({ hubspotAccessToken, logger, storage }) {
     });
 
     const html = await buildProposalHtml(viewModel);
-    const pdf = await createProposalPdf(html, dealId, storage);
+    // Serializa el render (cada uno abre un Chromium): bajo una ráfaga de cotizaciones
+    // las extra se encolan en vez de apilar navegadores y agotar la memoria del contenedor.
+    const pdf = await renderLimit(() => createProposalPdf(html, dealId, storage));
     await repo.saveQuoteUrl(dealId, pdf.url);
 
     logger.info({ dealId, url: pdf.url }, 'Quote PDF generated');
@@ -131,7 +138,7 @@ async function createProposalPdf(html, dealId, storage) {
       printBackground: true,
       margin: { top: '18mm', right: '14mm', bottom: '18mm', left: '14mm' },
     });
-    const key = `quotes/propuesta-${dealId}-${Date.now()}.pdf`;
+    const key = buildPdfKey(dealId);
     return storage.uploadPdf({ key, body: pdfBuffer });
   } finally {
     await browser.close();

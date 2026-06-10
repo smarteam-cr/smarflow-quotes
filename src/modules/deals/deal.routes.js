@@ -7,6 +7,7 @@ export default async function dealRoutes(fastify) {
     hubspotAccessToken: env.hubspotAccessToken,
     logger: fastify.log,
     storage: fastify.r2Storage,
+    pdfConcurrency: env.pdfMaxConcurrency,
   });
   const dealController = createDealController({ dealService });
 
