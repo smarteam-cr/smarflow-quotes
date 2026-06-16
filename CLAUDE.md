@@ -2,6 +2,27 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working on HubSpot components
 
+## Orientación del proyecto (Smartquotes)
+
+Smartquotes genera **cotizaciones en PDF** a partir de un **Deal de HubSpot**: el asesor presiona
+"Crear Cotización" en una card del panel lateral, el backend arma el PDF con los datos del deal, lo
+sube a **Cloudflare R2** y guarda el URL en el deal. **No usa base de datos.** En producción para el
+cliente Construtecho.
+
+**Son dos piezas con dos despliegues independientes:**
+- **Backend** (`src/`, sin `src/app/`): Fastify + Puppeteer en Docker sobre un VPS. Desplegar con
+  `git pull && docker compose up -d --build`.
+- **Card** (`src/app/`): UI extension React de HubSpot. Desplegar con `hs project upload` (HubSpot CLI).
+
+**Antes de tocar el proyecto, lee:**
+- `README.md` — instalación y ejecución local.
+- `docs/ARQUITECTURA.md` — piezas, flujo, estructura del código, servicios externos, mapeo de campos.
+- `docs/ENTREGA.md` — despliegue, ambientes, dependencias, pendientes y riesgos.
+
+Las reglas de abajo aplican al lado HubSpot del proyecto (la card y la app).
+
+---
+
 IMPORTANT: IF THE 'HubSpot' MCP SERVER IS INSTALLED USE THE TOOLS BEFORE TRYING TO MANUALLY USE CLI COMMANDS OR BEFORE TRYING TO DO ANYTHING WITH HUBSPOT ASSETS
 
 ## HubSpot Project Information
